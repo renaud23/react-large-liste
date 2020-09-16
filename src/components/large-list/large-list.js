@@ -18,24 +18,46 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
   const [ariaNow, setAriaNow] = useState(start);
   const [ariaMin] = useState(0);
 
+  const onChangeScrollPercent = useCallback(function (percent) {
+    if (!isNaN(percent)) {
+      setScrollPercent(percent);
+    }
+  }, []);
+
   const keyDown = useCallback(
     function () {
-      const next = Math.min(startRow + 1, elements.length - nbRows - 1);
+      const next = Math.min(startRow + 1, elements.length - nbRows);
       setStartRow(next);
+      setWheel({ delta: rowHeight });
     },
-    [startRow, nbRows, elements]
+    [startRow, nbRows, elements, rowHeight]
   );
-
-  const onChangeScrollPercent = useCallback(function (percent) {
-    if (!isNaN(percent)) setScrollPercent(percent);
-  }, []);
 
   const keyUp = useCallback(
     function () {
       const next = Math.max(startRow - 1, 0);
       setStartRow(next);
+      setWheel({ delta: -rowHeight });
     },
-    [startRow]
+    [startRow, rowHeight]
+  );
+
+  const keyPageUp = useCallback(
+    function () {
+      const next = Math.max(startRow - nbRows, 0);
+      setStartRow(next);
+      setWheel({ delta: -rowHeight * nbRows });
+    },
+    [startRow, nbRows, rowHeight]
+  );
+
+  const keyPageDown = useCallback(
+    function () {
+      const next = Math.min(startRow + nbRows, elements.length - nbRows);
+      setStartRow(next);
+      setWheel({ delta: rowHeight * nbRows });
+    },
+    [elements, startRow, nbRows, rowHeight]
   );
 
   useEffect(
@@ -119,11 +141,14 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
           keyDown();
         } else if (e.key === "ArrowUp") {
           keyUp();
+        } else if (e.key === "PageUp") {
+          keyPageUp();
+        } else if (e.key === "PageDown") {
+          keyPageDown();
         }
       }}
     >
       <VerticalScrollbar
-        height={viewportHeight}
         max={maxHeight}
         start={startScrollTop}
         ariaMax={elements.length}
