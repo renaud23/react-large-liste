@@ -1,0 +1,19 @@
+.custom-vertical-scrollBar {
+  position: absolute;
+  right: 0;
+  width: 12px;
+  background-color: rgba(100, 100, 100, 0.5);
+  border-left: solid 1px gray;
+  height: 100%;
+
+  &:hover {
+    background-color: rgba(100, 100, 100, 0.8);
+  }
+
+
+  .custom-vertical-scrollBar-track{
+      width: 100%;
+      position: absolute;
+      background-color: greenyellow;
+  }
+}

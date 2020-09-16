@@ -1,17 +1,26 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import { ReactLargeList } from "./components";
+import "./app.scss";
+
+const elements = new Array(100).fill(null).map(function (_, i) {
+  return { id: `Element-${i}` };
+});
+
+function LiRenderer({ id }) {
+  return <span className="">{`Option id : ${id}`}</span>;
+}
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <div className="custom-list">
+      <ReactLargeList
+        elements={elements}
+        start={0}
+        rowHeight={20}
+        component={LiRenderer}
+      ></ReactLargeList>
+    </div>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
