@@ -1,11 +1,10 @@
-import React, { useEffect, useCallback, useReducer } from "react";
+import React, { useEffect, useCallback, useReducer, useRef } from "react";
 import * as ACTIONS from "./actions";
 import reducer, { INITIAL_STATE } from "./reducer";
 import "./scrollbar.scss";
 
 function VerticalScrollBar({
   start,
-  height,
   max,
   ariaNow,
   ariaMax,
@@ -14,8 +13,9 @@ function VerticalScrollBar({
   parentWheel,
   onScroll = () => null,
 }) {
+  const containerEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const { tTop, tHeight, pHeight, drag, scrollPercent } = state;
+  const { tTop, tHeight, pHeight, drag, scrollPercent, height } = state;
 
   useEffect(
     function () {
@@ -29,11 +29,16 @@ function VerticalScrollBar({
 
   useEffect(
     function () {
-      if (height && max) {
-        dispatch(ACTIONS.onInit(start, height, max));
+      if (containerEl.current && max) {
+        const observer = new ResizeObserver(function () {
+          const { height } = containerEl.current.getBoundingClientRect();
+          dispatch(ACTIONS.onInit(start, height, max));
+        });
+
+        observer.observe(containerEl.current);
       }
     },
-    [start, height, max]
+    [start, containerEl, max]
   );
 
   useEffect(
@@ -60,6 +65,7 @@ function VerticalScrollBar({
     },
     [drag]
   );
+
   const windowMousemove = useCallback(
     function (e) {
       if (drag) {
@@ -81,9 +87,9 @@ function VerticalScrollBar({
     [windowMouseup, windowMousemove]
   );
 
-  if (!height || !tHeight || height >= max) {
-    return null;
-  }
+  // if (!tHeight || height >= max) {
+  //   return null;
+  // }
 
   return (
     <div
@@ -94,6 +100,7 @@ function VerticalScrollBar({
       aria-valuemax={ariaMax}
       aria-valuemin={ariaMin}
       aria-valuenow={ariaNow}
+      ref={containerEl}
     >
       <div
         className="custom-vertical-scrollBar-track"

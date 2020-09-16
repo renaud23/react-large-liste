@@ -1,12 +1,10 @@
 .react-large-list {
   position: relative;
   display: block;
-  height: 100%;
-  resize: both;
+  height:  100% ;
   
   &:focus {
-   outline: none;
-    
+   outline: none; 
   }
 
   -moz-user-select: -moz-none;

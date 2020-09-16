@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { ReactLargeList } from "./components";
 import "./app.scss";
 
-const elements = new Array(10000).fill(null).map(function (_, i) {
+const elements = new Array(100).fill(null).map(function (_, i) {
   return { id: `Element-${i}` };
 });
 
@@ -13,7 +13,7 @@ function LiRenderer({ id }) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <div className="custom-list">
+    <div className="custom-list" tabIndex="0">
       <ReactLargeList
         elements={elements}
         start={0}
