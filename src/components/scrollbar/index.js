@@ -1,1 +1,1 @@
-export { default as VerticalScrollbar } from "./verticall-scrollbar";
+export { default as VerticalScrollbar } from "./vertical";

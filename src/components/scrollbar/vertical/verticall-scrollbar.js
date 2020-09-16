@@ -1,0 +1,127 @@
+import React, { useEffect, useCallback, useReducer } from "react";
+import * as ACTIONS from "./actions";
+import reducer, { INITIAL_STATE } from "./reducer";
+import "./scrollbar.scss";
+
+function VerticalScrollBar({
+  start,
+  height,
+  max,
+  ariaNow,
+  ariaMax,
+  ariaMin,
+  ariaControl,
+  parentWheel,
+  onScroll = () => null,
+}) {
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const { tTop, tHeight, pHeight, drag, scrollPercent } = state;
+
+  useEffect(
+    function () {
+      if (parentWheel !== 0) {
+        const { delta } = parentWheel;
+        dispatch(ACTIONS.onWheel(delta));
+      }
+    },
+    [parentWheel]
+  );
+
+  useEffect(
+    function () {
+      if (height && max) {
+        dispatch(ACTIONS.onInit(start, height, max));
+      }
+    },
+    [start, height, max]
+  );
+
+  useEffect(
+    function () {
+      const percent = tTop / (height + pHeight - tHeight);
+      dispatch(ACTIONS.onChangeScroll(percent));
+    },
+    [tTop, height, pHeight, tHeight]
+  );
+
+  useEffect(
+    function () {
+      onScroll(scrollPercent);
+    },
+    [scrollPercent, onScroll]
+  );
+
+  const windowMouseup = useCallback(
+    function (e) {
+      if (drag) {
+        e.stopPropagation();
+        dispatch(ACTIONS.onStopDrag());
+      }
+    },
+    [drag]
+  );
+  const windowMousemove = useCallback(
+    function (e) {
+      if (drag) {
+        dispatch(ACTIONS.onDrag(e.clientY));
+      }
+    },
+    [drag]
+  );
+
+  useEffect(
+    function () {
+      window.addEventListener("mouseup", windowMouseup);
+      window.addEventListener("mousemove", windowMousemove);
+      return () => {
+        window.removeEventListener("mouseup", windowMouseup);
+        window.removeEventListener("mousemove", windowMousemove);
+      };
+    },
+    [windowMouseup, windowMousemove]
+  );
+
+  if (!height || !tHeight || height >= max) {
+    return null;
+  }
+
+  return (
+    <div
+      className="custom-vertical-scrollBar"
+      role="scrollbar"
+      aria-controls={ariaControl}
+      aria-orientation="vertical"
+      aria-valuemax={ariaMax}
+      aria-valuemin={ariaMin}
+      aria-valuenow={ariaNow}
+    >
+      <div
+        className="custom-vertical-scrollBar-track"
+        style={{ top: tTop, height: tHeight }}
+        draggable="false"
+        onDragStart={(e) => {
+          e.preventDefault();
+          return false;
+        }}
+        onMouseDown={function (e) {
+          e.stopPropagation();
+          if (e.button === 0) {
+            dispatch(ACTIONS.onStartDrag(e.clientY));
+          }
+        }}
+        onMouseUp={function (e) {
+          if (e.button === 0) {
+            e.stopPropagation();
+            dispatch(ACTIONS.onStopDrag());
+          }
+        }}
+        onWheel={function (e) {
+          e.stopPropagation();
+          dispatch(ACTIONS.onWheel(e.deltaY));
+        }}
+      ></div>
+    </div>
+  );
+}
+
+export default React.memo(VerticalScrollBar);
