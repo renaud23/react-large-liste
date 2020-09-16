@@ -66,6 +66,16 @@ function reduceOnChangeScroll(state, action) {
   return { ...state, scrollPercent: percent };
 }
 
+function reduceOnResize(state, action) {
+  const { payload } = action;
+  const { height } = payload;
+  const { max, tTop: tOld, height: hOld } = state;
+  const tTop = (tOld / hOld) * height;
+  const pHeight = Math.trunc((height / max) * height);
+  const tHeight = Math.max(pHeight, 10);
+  return { ...state, height, pHeight, tHeight, tTop };
+}
+
 function reducer(state, action) {
   const { type } = action;
   switch (type) {
@@ -81,6 +91,8 @@ function reducer(state, action) {
       return reduceOnStopDrag(state, action);
     case ACTIONS.ON_CHANGE_SCROLL:
       return reduceOnChangeScroll(state, action);
+    case ACTIONS.ON_RESIZE:
+      return reduceOnResize(state, action);
     default:
       return state;
   }

@@ -39,12 +39,9 @@ function reduceOnInit(state, action) {
   const { payload } = action;
   const { rowHeight, start, length } = payload;
   if (rowHeight) {
-    // const nbRows = Math.trunc(height / rowHeight);
     return {
       ...state,
-      // viewportHeight: height,
       rowHeight,
-      // nbRows,
       startRow: start,
       startTop: start * rowHeight,
       maxHeight: rowHeight * length,
@@ -109,21 +106,6 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const { nbRows, wheel, startRow, maxHeight, startTop, aria } = state;
 
-  // useEffect(
-  //   function () {
-  //     if (containerEl.current) {
-  //       const observer = new ResizeObserver(function () {
-  //         const { height } = containerEl.current.getBoundingClientRect();
-  //         const { length } = elements;
-  //         dispatch(onInit({ height, rowHeight, start, length }));
-  //       });
-
-  //       observer.observe(containerEl.current);
-  //     }
-  //   },
-  //   [containerEl, rowHeight, start, elements]
-  // );
-
   useEffect(
     function () {
       if (containerEl.current) {
@@ -140,7 +122,6 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
   useEffect(
     function () {
       if (containerEl.current) {
-        // const { height } = containerEl.current.getBoundingClientRect();
         const { length } = elements;
         dispatch(onInit({ rowHeight, start, length }));
       }
