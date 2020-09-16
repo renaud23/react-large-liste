@@ -19,7 +19,7 @@ function VerticalScrollBar({
 
   useEffect(
     function () {
-      if (parentWheel !== 0) {
+      if (parentWheel) {
         const { delta } = parentWheel;
         dispatch(ACTIONS.onWheel(delta));
       }
@@ -86,10 +86,6 @@ function VerticalScrollBar({
     },
     [windowMouseup, windowMousemove]
   );
-
-  // if (!tHeight || height >= max) {
-  //   return null;
-  // }
 
   return (
     <div
