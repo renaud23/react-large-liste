@@ -76,6 +76,14 @@ function reduceOnResize(state, action) {
   return { ...state, height, pHeight, tHeight, tTop };
 }
 
+function reduceOnMouseDown(state, action) {
+  const { payload } = action;
+  const { clientY } = payload;
+  const { tHeight, height } = state;
+  const tTop = Math.min(Math.min(clientY, height - tHeight));
+  return { ...state, tTop };
+}
+
 function reducer(state, action) {
   const { type } = action;
   switch (type) {
@@ -93,6 +101,8 @@ function reducer(state, action) {
       return reduceOnChangeScroll(state, action);
     case ACTIONS.ON_RESIZE:
       return reduceOnResize(state, action);
+    case ACTIONS.ON_MOUSE_DOWN:
+      return reduceOnMouseDown(state, action);
     default:
       return state;
   }

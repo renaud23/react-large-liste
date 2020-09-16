@@ -27,20 +27,6 @@ function VerticalScrollBar({
     [parentWheel]
   );
 
-  // useEffect(
-  //   function () {
-  //     if (containerEl.current && max) {
-  //       const observer = new ResizeObserver(function () {
-  //         const { height } = containerEl.current.getBoundingClientRect();
-  //         dispatch(ACTIONS.onInit(start, height, max));
-  //       });
-
-  //       observer.observe(containerEl.current);
-  //     }
-  //   },
-  //   [start, containerEl, max]
-  // );
-
   useEffect(
     function () {
       if (containerEl.current && max) {
@@ -98,6 +84,13 @@ function VerticalScrollBar({
     [drag]
   );
 
+  const onMouseDown = useCallback(function (e) {
+    e.stopPropagation();
+    const { top } = e.target.getBoundingClientRect();
+    const clientY = e.clientY - top;
+    dispatch(ACTIONS.onMouseDown(clientY));
+  }, []);
+
   useEffect(
     function () {
       window.addEventListener("mouseup", windowMouseup);
@@ -120,6 +113,7 @@ function VerticalScrollBar({
       aria-valuemin={ariaMin}
       aria-valuenow={ariaNow}
       ref={containerEl}
+      onMouseDown={onMouseDown}
     >
       <div
         className="custom-vertical-scrollBar-track"
