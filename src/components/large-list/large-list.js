@@ -1,105 +1,8 @@
 import React, { useEffect, useRef, useCallback, useReducer } from "react";
 import { VerticalScrollbar } from "../scrollbar";
+import * as ACTIONS from "./actions";
+import reducer, { INITIAL_STATE } from "./reducer";
 import "./large-list.scss";
-
-let __LARGE_LIST_ID__ = 1;
-
-const INITIAL_STATE = {
-  viewportHeight: undefined,
-  rowHeight: undefined,
-  nbRows: 0,
-  maxHeight: undefined,
-  wheel: undefined,
-  startRow: 0,
-  startTop: 0,
-  length: 0,
-  aria: { control: undefined, min: undefined, max: undefined, now: undefined },
-};
-
-const ON_INIT = "react-large-liste/on-init";
-const onInit = ({ height, rowHeight, start, length }) => ({
-  type: ON_INIT,
-  payload: { height, rowHeight, start, length },
-});
-
-const ON_WHEEL = "react-large-liste/on-wheel";
-const onWheel = (delta) => ({
-  type: ON_WHEEL,
-  payload: { delta },
-});
-
-const ON_SCROLL = "react-large-liste/on-scroll";
-const onScroll = (percent) => ({ type: ON_SCROLL, payload: { percent } });
-
-const ON_RESIZE = "react-large-liste/on-resize";
-const onResize = (height) => ({ type: ON_RESIZE, payload: { height } });
-/* ************* */
-
-function reduceOnInit(state, action) {
-  const { payload } = action;
-  const { rowHeight, start, length } = payload;
-  if (rowHeight) {
-    return {
-      ...state,
-      rowHeight,
-      startRow: start,
-      startTop: start * rowHeight,
-      maxHeight: rowHeight * length,
-      length,
-      aria: {
-        control: `large-list-${__LARGE_LIST_ID__++}`,
-        min: 0,
-        max: length,
-        now: start,
-      },
-    };
-  }
-  return state;
-}
-
-function reduceOnWheel(state, action) {
-  const { payload } = action;
-  const { delta } = payload;
-  const wheel = { delta };
-  return { ...state, wheel };
-}
-
-function reduceOnScroll(state, action) {
-  const { payload } = action;
-  const { percent } = payload;
-  const { nbRows, length, aria } = state;
-  const startRow = Math.min(Math.ceil(percent * length), length - nbRows);
-  if (startRow >= 0) {
-    return { ...state, startRow, aria: { ...aria, now: startRow } };
-  }
-  return state;
-}
-
-function reduceOnResize(state, action) {
-  const { payload } = action;
-  const { height } = payload;
-  const { rowHeight } = state;
-  const nbRows = Math.trunc(height / rowHeight);
-  return { ...state, viewportHeight: height, nbRows };
-}
-
-function reducer(state, action) {
-  const { type } = action;
-  switch (type) {
-    case ON_INIT:
-      return reduceOnInit(state, action);
-    case ON_WHEEL:
-      return reduceOnWheel(state, action);
-    case ON_SCROLL:
-      return reduceOnScroll(state, action);
-    case ON_RESIZE:
-      return reduceOnResize(state, action);
-    default:
-      return state;
-  }
-}
-
-/* ************* */
 
 function LargeList({ elements = [], rowHeight, start, component: Component }) {
   const containerEl = useRef();
@@ -111,7 +14,7 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
       if (containerEl.current) {
         const observer = new ResizeObserver(function () {
           const { height } = containerEl.current.getBoundingClientRect();
-          dispatch(onResize(height));
+          dispatch(ACTIONS.onResize(height));
         });
         observer.observe(containerEl.current);
       }
@@ -123,7 +26,7 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
     function () {
       if (containerEl.current) {
         const { length } = elements;
-        dispatch(onInit({ rowHeight, start, length }));
+        dispatch(ACTIONS.onInit({ rowHeight, start, length }));
       }
     },
     [containerEl, rowHeight, start, elements]
@@ -132,34 +35,34 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
   /* hook */
   const onChangeScrollPercent = useCallback(function (percent) {
     if (!isNaN(percent)) {
-      dispatch(onScroll(percent));
+      dispatch(ACTIONS.onScroll(percent));
     }
   }, []);
 
   const keyDown = useCallback(
     function () {
-      dispatch(onWheel(rowHeight));
+      dispatch(ACTIONS.onWheel(rowHeight));
     },
     [rowHeight]
   );
 
   const keyUp = useCallback(
     function () {
-      dispatch(onWheel(-rowHeight));
+      dispatch(ACTIONS.onWheel(-rowHeight));
     },
     [rowHeight]
   );
 
   const keyPageUp = useCallback(
     function () {
-      dispatch(onWheel(-rowHeight * nbRows));
+      dispatch(ACTIONS.onWheel(-rowHeight * nbRows));
     },
     [nbRows, rowHeight]
   );
 
   const keyPageDown = useCallback(
     function () {
-      dispatch(onWheel(rowHeight * nbRows));
+      dispatch(ACTIONS.onWheel(rowHeight * nbRows));
     },
     [nbRows, rowHeight]
   );
@@ -180,7 +83,7 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
       ref={containerEl}
       onWheel={function (e) {
         e.stopPropagation();
-        dispatch(onWheel(e.deltaY));
+        dispatch(ACTIONS.onWheel(e.deltaY));
       }}
       onKeyDown={function (e) {
         e.preventDefault();
