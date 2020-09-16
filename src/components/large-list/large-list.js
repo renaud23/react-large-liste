@@ -1,125 +1,173 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useReducer } from "react";
 import { VerticalScrollbar } from "../scrollbar";
 import "./large-list.scss";
 
 let __LARGE_LIST_ID__ = 1;
 
+const INITIAL_STATE = {
+  viewportHeight: undefined,
+  rowHeight: undefined,
+  nbRows: 0,
+  maxHeight: undefined,
+  wheel: undefined,
+  startRow: 0,
+  startTop: 0,
+  length: 0,
+  aria: { control: undefined, min: undefined, max: undefined, now: undefined },
+};
+
+const ON_INIT = "react-large-liste/on-init";
+const onInit = ({ height, rowHeight, start, length }) => ({
+  type: ON_INIT,
+  payload: { height, rowHeight, start, length },
+});
+
+const ON_WHEEL = "react-large-liste/on-wheel";
+const onWheel = (delta) => ({
+  type: ON_WHEEL,
+  payload: { delta },
+});
+
+const ON_SCROLL = "react-large-liste/on-scroll";
+const onScroll = (percent) => ({ type: ON_SCROLL, payload: { percent } });
+
+const ON_RESIZE = "react-large-liste/on-resize";
+const onResize = (height) => ({ type: ON_RESIZE, payload: { height } });
+/* ************* */
+
+function reduceOnInit(state, action) {
+  const { payload } = action;
+  const { rowHeight, start, length } = payload;
+  if (rowHeight) {
+    return {
+      ...state,
+      rowHeight,
+      startRow: start,
+      startTop: start * rowHeight,
+      maxHeight: rowHeight * length,
+      length,
+      aria: {
+        control: `large-list-${__LARGE_LIST_ID__++}`,
+        min: 0,
+        max: length,
+        now: start,
+      },
+    };
+  }
+  return state;
+}
+
+function reduceOnWheel(state, action) {
+  const { payload } = action;
+  const { delta } = payload;
+  const wheel = { delta };
+  return { ...state, wheel };
+}
+
+function reduceOnScroll(state, action) {
+  const { payload } = action;
+  const { percent } = payload;
+  const { nbRows, length, aria } = state;
+  const startRow = Math.min(Math.ceil(percent * length), length - nbRows);
+  if (startRow >= 0) {
+    return { ...state, startRow, aria: { ...aria, now: startRow } };
+  }
+  return state;
+}
+
+function reduceOnResize(state, action) {
+  const { payload } = action;
+  const { height } = payload;
+  const { rowHeight } = state;
+  const nbRows = Math.trunc(height / rowHeight);
+  return { ...state, viewportHeight: height, nbRows };
+}
+
+function reducer(state, action) {
+  const { type } = action;
+  switch (type) {
+    case ON_INIT:
+      return reduceOnInit(state, action);
+    case ON_WHEEL:
+      return reduceOnWheel(state, action);
+    case ON_SCROLL:
+      return reduceOnScroll(state, action);
+    case ON_RESIZE:
+      return reduceOnResize(state, action);
+    default:
+      return state;
+  }
+}
+
+/* ************* */
+
 function LargeList({ elements = [], rowHeight, start, component: Component }) {
   const containerEl = useRef();
-  const [wheel, setWheel] = useState(0);
-  const [refresh, setRefresh] = useState(false);
-  const [scrollPercent, setScrollPercent] = useState(undefined);
-  const [startScrollTop, setStartScrollTop] = useState(start);
-  const [nbRows, setNbRows] = useState(0);
-  const [startRow, setStartRow] = useState(start || 0);
-  const [maxHeight] = useState(elements.length * rowHeight);
-  const [viewportHeight, setViewportHeight] = useState(undefined);
-  const [ariaControl] = useState(`large-list-${__LARGE_LIST_ID__++}`);
-  const [ariaNow, setAriaNow] = useState(start);
-  const [ariaMin] = useState(0);
-
-  const onChangeScrollPercent = useCallback(function (percent) {
-    if (!isNaN(percent)) {
-      setScrollPercent(percent);
-    }
-  }, []);
-
-  const keyDown = useCallback(
-    function () {
-      const next = Math.min(startRow + 1, elements.length - nbRows);
-      setStartRow(next);
-      setWheel({ delta: rowHeight });
-    },
-    [startRow, nbRows, elements, rowHeight]
-  );
-
-  const keyUp = useCallback(
-    function () {
-      const next = Math.max(startRow - 1, 0);
-      setStartRow(next);
-      setWheel({ delta: -rowHeight });
-    },
-    [startRow, rowHeight]
-  );
-
-  const keyPageUp = useCallback(
-    function () {
-      const next = Math.max(startRow - nbRows, 0);
-      setStartRow(next);
-      setWheel({ delta: -rowHeight * nbRows });
-    },
-    [startRow, nbRows, rowHeight]
-  );
-
-  const keyPageDown = useCallback(
-    function () {
-      const next = Math.min(startRow + nbRows, elements.length - nbRows);
-      setStartRow(next);
-      setWheel({ delta: rowHeight * nbRows });
-    },
-    [elements, startRow, nbRows, rowHeight]
-  );
-
-  useEffect(
-    function () {
-      if (start !== undefined && nbRows) {
-        const ref = Math.min(start, elements.length - nbRows);
-        setStartScrollTop(ref);
-      }
-    },
-    [start, nbRows, elements]
-  );
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const { nbRows, wheel, startRow, maxHeight, startTop, aria } = state;
 
   useEffect(
     function () {
       if (containerEl.current) {
-        const bRect = containerEl.current.getBoundingClientRect();
-        setViewportHeight(bRect.height);
         const observer = new ResizeObserver(function () {
-          setRefresh(true);
+          const { height } = containerEl.current.getBoundingClientRect();
+          dispatch(onResize(height));
         });
-
         observer.observe(containerEl.current);
       }
     },
     [containerEl]
   );
+
   useEffect(
     function () {
-      if (viewportHeight && rowHeight) {
-        setNbRows(Math.trunc(viewportHeight / rowHeight));
+      if (containerEl.current) {
+        const { length } = elements;
+        dispatch(onInit({ rowHeight, start, length }));
       }
     },
-    [rowHeight, viewportHeight]
+    [containerEl, rowHeight, start, elements]
   );
-  useEffect(
+
+  /* hook */
+  const onChangeScrollPercent = useCallback(function (percent) {
+    if (!isNaN(percent)) {
+      dispatch(onScroll(percent));
+    }
+  }, []);
+
+  const keyDown = useCallback(
     function () {
-      const now = Math.min(
-        Math.ceil(scrollPercent * elements.length),
-        elements.length - nbRows
-      );
-      if (now >= 0) {
-        setStartRow(now);
-        setAriaNow(now);
-      }
+      dispatch(onWheel(rowHeight));
     },
-    [scrollPercent, nbRows, elements, maxHeight]
+    [rowHeight]
   );
-  useEffect(
+
+  const keyUp = useCallback(
     function () {
-      if (refresh) {
-        const bRect = containerEl.current.getBoundingClientRect();
-        setViewportHeight(bRect.height);
-        setRefresh(false);
-      }
+      dispatch(onWheel(-rowHeight));
     },
-    [refresh]
+    [rowHeight]
+  );
+
+  const keyPageUp = useCallback(
+    function () {
+      dispatch(onWheel(-rowHeight * nbRows));
+    },
+    [nbRows, rowHeight]
+  );
+
+  const keyPageDown = useCallback(
+    function () {
+      dispatch(onWheel(rowHeight * nbRows));
+    },
+    [nbRows, rowHeight]
   );
 
   const li = new Array(nbRows).fill(null).map(function (_, i) {
     const element = elements[startRow + i];
     return (
-      <li key={i} style={{ height: rowHeight }}>
+      <li id={aria.control} key={i} style={{ height: rowHeight }}>
         <Component {...element} index={i} />
       </li>
     );
@@ -132,7 +180,7 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
       ref={containerEl}
       onWheel={function (e) {
         e.stopPropagation();
-        setWheel({ delta: e.deltaY });
+        dispatch(onWheel(e.deltaY));
       }}
       onKeyDown={function (e) {
         e.preventDefault();
@@ -150,11 +198,11 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
     >
       <VerticalScrollbar
         max={maxHeight}
-        start={startScrollTop}
-        ariaMax={elements.length}
-        ariaMin={ariaMin}
-        ariaNow={ariaNow}
-        ariaControl={ariaControl}
+        start={startTop}
+        ariaMax={aria.max}
+        ariaMin={aria.min}
+        ariaNow={aria.now}
+        ariaControl={aria.control}
         onScroll={onChangeScrollPercent}
         parentWheel={wheel}
       />

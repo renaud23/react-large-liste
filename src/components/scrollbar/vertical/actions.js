@@ -27,3 +27,6 @@ export const onChangeScroll = (percent) => ({
   type: ON_CHANGE_SCROLL,
   payload: { percent },
 });
+
+export const ON_RESIZE = "vertical-scrollbar/on-resize";
+export const onResize = (height) => ({ type: ON_RESIZE, payload: { height } });

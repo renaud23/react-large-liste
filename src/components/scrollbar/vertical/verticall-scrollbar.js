@@ -19,7 +19,7 @@ function VerticalScrollBar({
 
   useEffect(
     function () {
-      if (parentWheel !== 0) {
+      if (parentWheel) {
         const { delta } = parentWheel;
         dispatch(ACTIONS.onWheel(delta));
       }
@@ -27,18 +27,41 @@ function VerticalScrollBar({
     [parentWheel]
   );
 
+  // useEffect(
+  //   function () {
+  //     if (containerEl.current && max) {
+  //       const observer = new ResizeObserver(function () {
+  //         const { height } = containerEl.current.getBoundingClientRect();
+  //         dispatch(ACTIONS.onInit(start, height, max));
+  //       });
+
+  //       observer.observe(containerEl.current);
+  //     }
+  //   },
+  //   [start, containerEl, max]
+  // );
+
   useEffect(
     function () {
       if (containerEl.current && max) {
-        const observer = new ResizeObserver(function () {
-          const { height } = containerEl.current.getBoundingClientRect();
-          dispatch(ACTIONS.onInit(start, height, max));
-        });
-
-        observer.observe(containerEl.current);
+        const { height } = containerEl.current.getBoundingClientRect();
+        dispatch(ACTIONS.onInit(start, height, max));
       }
     },
     [start, containerEl, max]
+  );
+
+  useEffect(
+    function () {
+      if (containerEl.current) {
+        const observer = new ResizeObserver(function () {
+          const { height } = containerEl.current.getBoundingClientRect();
+          dispatch(ACTIONS.onResize(height));
+        });
+        observer.observe(containerEl.current);
+      }
+    },
+    [containerEl]
   );
 
   useEffect(
@@ -86,10 +109,6 @@ function VerticalScrollBar({
     },
     [windowMouseup, windowMousemove]
   );
-
-  // if (!tHeight || height >= max) {
-  //   return null;
-  // }
 
   return (
     <div
