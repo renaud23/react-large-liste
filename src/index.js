@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { ReactLargeList } from "./components";
 import "./app.scss";
 
-const elements = new Array(1000).fill(null).map(function (_, i) {
+const elements = new Array(100).fill(null).map(function (_, i) {
   return { id: `Element-${i}` };
 });
 

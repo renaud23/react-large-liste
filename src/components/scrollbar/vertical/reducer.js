@@ -7,6 +7,7 @@ export const INITIAL_STATE = {
   drag: false,
   clientY: undefined,
   scrollPercent: 0,
+  refresh: false,
 };
 
 /* ************************** */
@@ -23,7 +24,7 @@ function reduceOnWheel(state, action) {
       height - tHeight
     );
 
-    return { ...state, tTop: next };
+    return { ...state, tTop: next, refresh: true };
   }
   return state;
 }
@@ -53,27 +54,28 @@ function reduceOnDrag(state, action) {
   const delta = mouseY - (clientY || mouseY);
   const top = Math.min(Math.max(tTop + delta, 0), height - tHeight);
 
-  return { ...state, clientY: mouseY, tTop: top };
+  return { ...state, clientY: mouseY, tTop: top, refresh: true };
 }
 
 function reduceOnStopDrag(state) {
   return { ...state, drag: false, clientY: undefined };
 }
 
-function reduceOnChangeScroll(state, action) {
-  const { payload } = action;
-  const { percent } = payload;
-  return { ...state, scrollPercent: percent };
+function reduceOnChangeScroll(state) {
+  const { tTop, height, tHeight, pHeight } = state;
+  const scrollPercent = tTop / (height + pHeight - tHeight);
+  return { ...state, scrollPercent, refresh: false };
 }
 
 function reduceOnResize(state, action) {
   const { payload } = action;
   const { height } = payload;
   const { max, tTop: tOld, height: hOld } = state;
-  const tTop = (tOld / hOld) * height;
   const pHeight = Math.trunc((height / max) * height);
   const tHeight = Math.max(pHeight, 10);
-  return { ...state, height, pHeight, tHeight, tTop };
+  const tTop = Math.min((tOld / hOld) * height, height - tHeight);
+  const scrollPercent = tTop / (height + pHeight - tHeight);
+  return { ...state, height, pHeight, tHeight, tTop, scrollPercent };
 }
 
 function reduceOnMouseDown(state, action) {
