@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useReducer, useRef } from "react";
 import * as ACTIONS from "./actions";
+import classnames from "classnames";
 import reducer, { INITIAL_STATE } from "./reducer";
 import "./scrollbar.scss";
 
@@ -105,7 +106,7 @@ function VerticalScrollBar({
 
   return (
     <div
-      className="custom-vertical-scrollBar"
+      className={classnames("custom-vertical-scrollBar", { drag })}
       role="scrollbar"
       aria-controls={ariaControl}
       aria-orientation="vertical"

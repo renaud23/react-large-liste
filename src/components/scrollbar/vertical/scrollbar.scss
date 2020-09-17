@@ -6,13 +6,23 @@
   border-left: solid 1px gray;
   height: 100%;
 
+  &.drag {
+    background-color: rgba(165, 148, 49, 0.438);
+    &:hover {
+      background-color: rgba(165, 148, 49, 0.438);
+   }
+  }
+
   &:hover {
-    background-color: rgba(100, 100, 100, 0.8);
+     background-color: rgba(100, 100, 100, 0.8);
   }
 
   .custom-vertical-scrollBar-track {
-    width: 100%;
+    width: calc(100% - 1px);
     position: absolute;
-    background-color: greenyellow;
+    background-color: lime;
+    &:hover{
+      cursor: pointer;
+    }
   }
 }

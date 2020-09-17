@@ -50,7 +50,7 @@ function reduceOnDrag(state, action) {
   const { payload } = action;
   const { mouseY } = payload;
   const { tTop, height, tHeight, clientY } = state;
-  const delta = mouseY - (clientY || 1);
+  const delta = mouseY - (clientY || mouseY);
   const top = Math.min(Math.max(tTop + delta, 0), height - tHeight);
 
   return { ...state, clientY: mouseY, tTop: top };

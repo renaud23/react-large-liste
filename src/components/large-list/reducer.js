@@ -60,7 +60,7 @@ function reduceOnResize(state, action) {
   const { payload } = action;
   const { height } = payload;
   const { rowHeight } = state;
-  const nbRows = Math.trunc(height / rowHeight);
+  const nbRows = Math.ceil(height / rowHeight);
   return { ...state, viewportHeight: height, nbRows };
 }
 
