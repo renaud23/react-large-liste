@@ -7,9 +7,47 @@ export const INITIAL_STATE = {
   drag: false,
   clientY: undefined,
   scrollPercent: 0,
+  refresh: false,
 };
 
 /* ************************** */
+
+const __TRACK_MIN_HEIGHT__ = 10;
+
+function reduceOnInit(state, action) {
+  const { payload } = action;
+  const { height, max, start } = payload;
+  const pHeight = Math.trunc((height / max) * height);
+  const tHeight = Math.max(pHeight, __TRACK_MIN_HEIGHT__);
+  const tTop = Math.min(Math.trunc((start / max) * height), height - tHeight);
+  return { ...state, height, max, start, tTop, tHeight, pHeight };
+}
+
+function reduceOnResize(state, action) {
+  const { payload } = action;
+  const { height } = payload;
+  const { max, tTop: tOld, height: hOld } = state;
+  const pHeight = Math.trunc((height / max) * height);
+  const tHeight = Math.max(pHeight, __TRACK_MIN_HEIGHT__);
+  const tTop = Math.min((tOld / hOld) * height, height - tHeight);
+  return { ...state, height, pHeight, tHeight, tTop };
+}
+
+function reduceOnStartDrag(state, action) {
+  const { payload } = action;
+  const { clientY } = payload;
+  return { ...state, drag: true, clientY: clientY };
+}
+
+function reduceOnDrag(state, action) {
+  const { payload } = action;
+  const { mouseY } = payload;
+  const { tTop, height, tHeight, clientY } = state;
+  const delta = mouseY - (clientY || mouseY);
+  const top = Math.min(Math.max(tTop + delta, 0), height - tHeight);
+
+  return { ...state, clientY: mouseY, tTop: top, refresh: true };
+}
 
 function reduceOnWheel(state, action) {
   const { tTop, height, tHeight, max } = state;
@@ -23,57 +61,19 @@ function reduceOnWheel(state, action) {
       height - tHeight
     );
 
-    return { ...state, tTop: next };
+    return { ...state, tTop: next, refresh: true };
   }
   return state;
-}
-
-function reduceOnInit(state, action) {
-  const { payload } = action;
-  const { height, max, start } = payload;
-  const pHeight = Math.trunc((height / max) * height);
-  const tHeight = Math.max(pHeight, 10);
-  const tTop = Math.min(
-    Math.max(Math.trunc((start / max) * height), 0),
-    height - tHeight
-  );
-  return { ...state, height, max, start, tTop, tHeight, pHeight };
-}
-
-function reduceOnStartDrag(state, action) {
-  const { payload } = action;
-  const { clientY } = payload;
-  return { ...state, drag: true, clientY: clientY };
-}
-
-function reduceOnDrag(state, action) {
-  const { payload } = action;
-  const { mouseY } = payload;
-  const { tTop, height, tHeight, clientY } = state;
-  const delta = mouseY - (clientY || 1);
-  const top = Math.min(Math.max(tTop + delta, 0), height - tHeight);
-
-  return { ...state, clientY: mouseY, tTop: top };
 }
 
 function reduceOnStopDrag(state) {
   return { ...state, drag: false, clientY: undefined };
 }
 
-function reduceOnChangeScroll(state, action) {
-  const { payload } = action;
-  const { percent } = payload;
-  return { ...state, scrollPercent: percent };
-}
-
-function reduceOnResize(state, action) {
-  const { payload } = action;
-  const { height } = payload;
-  const { max, tTop: tOld, height: hOld } = state;
-  const tTop = (tOld / hOld) * height;
-  const pHeight = Math.trunc((height / max) * height);
-  const tHeight = Math.max(pHeight, 10);
-  return { ...state, height, pHeight, tHeight, tTop };
+function reduceOnChangeScroll(state) {
+  const { tTop, height, tHeight } = state;
+  const scrollPercent = tTop / (height - tHeight);
+  return { ...state, scrollPercent, refresh: false };
 }
 
 function reduceOnMouseDown(state, action) {

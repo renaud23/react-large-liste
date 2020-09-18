@@ -49,7 +49,11 @@ function reduceOnScroll(state, action) {
   const { payload } = action;
   const { percent } = payload;
   const { nbRows, length, aria } = state;
-  const startRow = Math.min(Math.ceil(percent * length), length - nbRows);
+  // const startRow = Math.min(
+  //   Math.ceil(percent * (length - nbRows)),
+  //   length - nbRows
+  // );
+  const startRow = Math.ceil(percent * (length - nbRows));
   if (startRow >= 0) {
     return { ...state, startRow, aria: { ...aria, now: startRow } };
   }
@@ -60,7 +64,7 @@ function reduceOnResize(state, action) {
   const { payload } = action;
   const { height } = payload;
   const { rowHeight } = state;
-  const nbRows = Math.trunc(height / rowHeight);
+  const nbRows = Math.ceil(height / rowHeight);
   return { ...state, viewportHeight: height, nbRows };
 }
 

@@ -70,7 +70,7 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
   const li = new Array(nbRows).fill(null).map(function (_, i) {
     const element = elements[startRow + i];
     return (
-      <li id={aria.control} key={i} style={{ height: rowHeight }}>
+      <li key={i} style={{ height: rowHeight }}>
         <Component {...element} index={i} />
       </li>
     );
@@ -109,7 +109,7 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
         onScroll={onChangeScrollPercent}
         parentWheel={wheel}
       />
-      <ul>{li}</ul>
+      <ul id={aria.control}>{li}</ul>
     </div>
   );
 }

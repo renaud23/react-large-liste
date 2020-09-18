@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useReducer, useRef } from "react";
 import * as ACTIONS from "./actions";
+import classnames from "classnames";
 import reducer, { INITIAL_STATE } from "./reducer";
 import "./scrollbar.scss";
 
@@ -15,7 +16,7 @@ function VerticalScrollBar({
 }) {
   const containerEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const { tTop, tHeight, pHeight, drag, scrollPercent, height } = state;
+  const { tTop, tHeight, drag, scrollPercent, refresh } = state;
 
   useEffect(
     function () {
@@ -52,10 +53,11 @@ function VerticalScrollBar({
 
   useEffect(
     function () {
-      const percent = tTop / (height + pHeight - tHeight);
-      dispatch(ACTIONS.onChangeScroll(percent));
+      if (refresh) {
+        dispatch(ACTIONS.onChangeScroll());
+      }
     },
-    [tTop, height, pHeight, tHeight]
+    [refresh]
   );
 
   useEffect(
@@ -105,7 +107,7 @@ function VerticalScrollBar({
 
   return (
     <div
-      className="custom-vertical-scrollBar"
+      className={classnames("custom-vertical-scrollBar", { drag })}
       role="scrollbar"
       aria-controls={ariaControl}
       aria-orientation="vertical"

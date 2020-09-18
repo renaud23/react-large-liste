@@ -16,7 +16,7 @@ ReactDOM.render(
     <div className="custom-list" tabIndex="0">
       <ReactLargeList
         elements={elements}
-        start={30}
+        start={50}
         rowHeight={20}
         component={LiRenderer}
       ></ReactLargeList>
