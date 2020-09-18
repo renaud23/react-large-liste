@@ -90,7 +90,7 @@ function reduceOnMouseDown(state, action) {
   const { clientY } = payload;
   const { tHeight, height } = state;
   const tTop = Math.min(Math.min(clientY, height - tHeight));
-  return { ...state, tTop };
+  return { ...state, tTop, refresh: true };
 }
 
 function reducer(state, action) {
