@@ -16,7 +16,7 @@ function VerticalScrollBar({
 }) {
   const containerEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const { tTop, tHeight, drag, scrollPercent, refresh } = state;
+  const { tTop, tHeight, drag, scrollPercent, refresh, height } = state;
 
   useEffect(
     function () {
@@ -38,17 +38,18 @@ function VerticalScrollBar({
     [start, containerEl, max]
   );
 
+  const { current } = containerEl;
   useEffect(
     function () {
-      if (containerEl.current) {
+      if (current) {
         const observer = new ResizeObserver(function () {
-          const { height } = containerEl.current.getBoundingClientRect();
+          const { height } = current.getBoundingClientRect();
           dispatch(ACTIONS.onResize(height));
         });
-        observer.observe(containerEl.current);
+        observer.observe(current);
       }
     },
-    [containerEl]
+    [current]
   );
 
   useEffect(
@@ -117,31 +118,33 @@ function VerticalScrollBar({
       ref={containerEl}
       onMouseDown={onMouseDown}
     >
-      <div
-        className="custom-vertical-scrollBar-track"
-        style={{ top: tTop, height: tHeight }}
-        draggable="false"
-        onDragStart={(e) => {
-          e.preventDefault();
-          return false;
-        }}
-        onMouseDown={function (e) {
-          e.stopPropagation();
-          if (e.button === 0) {
-            dispatch(ACTIONS.onStartDrag(e.clientY));
-          }
-        }}
-        onMouseUp={function (e) {
-          if (e.button === 0) {
+      {max > height ? (
+        <div
+          className="custom-vertical-scrollBar-track"
+          style={{ top: tTop, height: tHeight }}
+          draggable="false"
+          onDragStart={(e) => {
+            e.preventDefault();
+            return false;
+          }}
+          onMouseDown={function (e) {
             e.stopPropagation();
-            dispatch(ACTIONS.onStopDrag());
-          }
-        }}
-        onWheel={function (e) {
-          e.stopPropagation();
-          dispatch(ACTIONS.onWheel(e.deltaY));
-        }}
-      ></div>
+            if (e.button === 0) {
+              dispatch(ACTIONS.onStartDrag(e.clientY));
+            }
+          }}
+          onMouseUp={function (e) {
+            if (e.button === 0) {
+              e.stopPropagation();
+              dispatch(ACTIONS.onStopDrag());
+            }
+          }}
+          onWheel={function (e) {
+            e.stopPropagation();
+            dispatch(ACTIONS.onWheel(e.deltaY));
+          }}
+        ></div>
+      ) : null}
     </div>
   );
 }

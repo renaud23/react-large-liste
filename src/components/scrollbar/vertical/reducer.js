@@ -10,6 +10,10 @@ export const INITIAL_STATE = {
   refresh: false,
 };
 
+function trunc(x) {
+  return Math.trunc(x * 100) / 100;
+}
+
 /* ************************** */
 
 const __TRACK_MIN_HEIGHT__ = 10;
@@ -27,10 +31,17 @@ function reduceOnResize(state, action) {
   const { payload } = action;
   const { height } = payload;
   const { max, tTop: tOld, height: hOld } = state;
-  const pHeight = Math.trunc((height / max) * height);
+  const pHeight = Math.ceil((height / max) * height);
   const tHeight = Math.max(pHeight, __TRACK_MIN_HEIGHT__);
   const tTop = Math.min((tOld / hOld) * height, height - tHeight);
-  return { ...state, height, pHeight, tHeight, tTop };
+
+  return {
+    ...state,
+    height,
+    pHeight,
+    tHeight,
+    tTop,
+  };
 }
 
 function reduceOnStartDrag(state, action) {
@@ -72,7 +83,7 @@ function reduceOnStopDrag(state) {
 
 function reduceOnChangeScroll(state) {
   const { tTop, height, tHeight } = state;
-  const scrollPercent = tTop / (height - tHeight);
+  const scrollPercent = trunc(tTop / (height - tHeight));
   return { ...state, scrollPercent, refresh: false };
 }
 

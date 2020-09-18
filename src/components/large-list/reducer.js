@@ -63,8 +63,18 @@ function reduceOnScroll(state, action) {
 function reduceOnResize(state, action) {
   const { payload } = action;
   const { height } = payload;
-  const { rowHeight } = state;
-  const nbRows = Math.ceil(height / rowHeight);
+  const { rowHeight, startRow, length } = state;
+  const nbRows = Math.min(Math.ceil(height / rowHeight), length);
+
+  if (startRow + nbRows > length - 1) {
+    return {
+      ...state,
+      viewportHeight: height,
+      nbRows,
+      startRow: Math.max(length - nbRows, 0),
+    };
+  }
+
   return { ...state, viewportHeight: height, nbRows };
 }
 
