@@ -49,7 +49,11 @@ function reduceOnScroll(state, action) {
   const { payload } = action;
   const { percent } = payload;
   const { nbRows, length, aria } = state;
-  const startRow = Math.min(Math.ceil(percent * length), length - nbRows);
+  // const startRow = Math.min(
+  //   Math.ceil(percent * (length - nbRows)),
+  //   length - nbRows
+  // );
+  const startRow = Math.ceil(percent * (length - nbRows));
   if (startRow >= 0) {
     return { ...state, startRow, aria: { ...aria, now: startRow } };
   }
