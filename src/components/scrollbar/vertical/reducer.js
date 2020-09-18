@@ -33,8 +33,7 @@ function reduceOnResize(state, action) {
   const { max, tTop: tOld, height: hOld } = state;
   const pHeight = Math.ceil((height / max) * height);
   const tHeight = Math.max(pHeight, __TRACK_MIN_HEIGHT__);
-  const tTop = Math.min((tOld / hOld) * height, height - tHeight);
-
+  const tTop = Math.max(Math.min((tOld / hOld) * height, height - tHeight), 0);
   return {
     ...state,
     height,
@@ -56,7 +55,6 @@ function reduceOnDrag(state, action) {
   const { tTop, height, tHeight, clientY } = state;
   const delta = mouseY - (clientY || mouseY);
   const top = Math.min(Math.max(tTop + delta, 0), height - tHeight);
-
   return { ...state, clientY: mouseY, tTop: top, refresh: true };
 }
 
