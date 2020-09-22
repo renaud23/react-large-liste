@@ -1,11 +1,26 @@
-.custom-list{
-    resize: both;
-    background-color: rgb(80,60,60);
-    color: beige;
-    height: 200px;
-    width: 400px;
-    display: inline-block;
-    overflow: hidden;  
-    margin-top: 50px;
-    margin-left: 50px;
+.custom-list {
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 16px;
+  resize: both;
+  background-color: rgb(80, 60, 60);
+  color: beige;
+  height: 200px;
+  width: 400px;
+  display: inline-block;
+  overflow: hidden;
+ 
+  position: absolute;
+  top: 50px;
+  left: 60px;
+
+  .my-option {
+    line-height: 20px;
+    max-height: 20px;
+
+    .id {
+      background-color: darkblue;
+      display: inline-block;
+      height: 100%;
+    }
+  }
 }

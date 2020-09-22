@@ -2,9 +2,17 @@ import React, { useEffect, useCallback, useReducer, useRef } from "react";
 import * as ACTIONS from "./actions";
 import classnames from "classnames";
 import reducer, { INITIAL_STATE } from "./reducer";
-import "./scrollbar.scss";
 
-function VerticalScrollBar({
+function getStyle(vertical, state) {
+  const { tPos, tSize } = state;
+  if (vertical) {
+    return { top: tPos, height: tSize };
+  }
+  return { left: tPos, width: tSize };
+}
+
+function ScrollBar({
+  rootClassName,
   start,
   max,
   ariaNow,
@@ -12,11 +20,12 @@ function VerticalScrollBar({
   ariaMin,
   ariaControl,
   parentWheel,
+  vertical = false,
   onScroll = () => null,
 }) {
   const containerEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const { tTop, tHeight, drag, scrollPercent, refresh, height } = state;
+  const { drag, scrollPercent, refresh, size } = state;
 
   useEffect(
     function () {
@@ -31,11 +40,11 @@ function VerticalScrollBar({
   useEffect(
     function () {
       if (containerEl.current && max) {
-        const { height } = containerEl.current.getBoundingClientRect();
-        dispatch(ACTIONS.onInit(start, height, max));
+        const { width, height } = containerEl.current.getBoundingClientRect();
+        dispatch(ACTIONS.onInit(start, vertical ? height : width, max));
       }
     },
-    [start, containerEl, max]
+    [start, containerEl, max, vertical]
   );
 
   const { current } = containerEl;
@@ -43,13 +52,13 @@ function VerticalScrollBar({
     function () {
       if (current) {
         const observer = new ResizeObserver(function () {
-          const { height } = current.getBoundingClientRect();
-          dispatch(ACTIONS.onResize(height));
+          const { width, height } = current.getBoundingClientRect();
+          dispatch(ACTIONS.onResize(vertical ? height : width));
         });
         observer.observe(current);
       }
     },
-    [current]
+    [current, vertical]
   );
 
   useEffect(
@@ -81,18 +90,22 @@ function VerticalScrollBar({
   const windowMousemove = useCallback(
     function (e) {
       if (drag) {
-        dispatch(ACTIONS.onDrag(e.clientY));
+        const { clientX, clientY } = e;
+        dispatch(ACTIONS.onDrag(vertical ? clientY : clientX));
       }
     },
-    [drag]
+    [drag, vertical]
   );
 
-  const onMouseDown = useCallback(function (e) {
-    e.stopPropagation();
-    const { top } = e.target.getBoundingClientRect();
-    const clientY = e.clientY - top;
-    dispatch(ACTIONS.onMouseDown(clientY));
-  }, []);
+  const onMouseDown = useCallback(
+    function (e) {
+      e.stopPropagation();
+      const { left, top } = e.target.getBoundingClientRect();
+      const clientPos = vertical ? e.clientY - top : e.clientX - left;
+      dispatch(ACTIONS.onMouseDown(clientPos));
+    },
+    [vertical]
+  );
 
   useEffect(
     function () {
@@ -108,7 +121,7 @@ function VerticalScrollBar({
 
   return (
     <div
-      className={classnames("custom-vertical-scrollBar", { drag })}
+      className={classnames(rootClassName, { drag })}
       role="scrollbar"
       aria-controls={ariaControl}
       aria-orientation="vertical"
@@ -118,10 +131,10 @@ function VerticalScrollBar({
       ref={containerEl}
       onMouseDown={onMouseDown}
     >
-      {max > height ? (
+      {max > size ? (
         <div
-          className="custom-vertical-scrollBar-track"
-          style={{ top: tTop, height: tHeight }}
+          className={`${rootClassName}-track`}
+          style={getStyle(vertical, state)}
           draggable="false"
           onDragStart={(e) => {
             e.preventDefault();
@@ -130,7 +143,8 @@ function VerticalScrollBar({
           onMouseDown={function (e) {
             e.stopPropagation();
             if (e.button === 0) {
-              dispatch(ACTIONS.onStartDrag(e.clientY));
+              const { clientX, clientY } = e;
+              dispatch(ACTIONS.onStartDrag(vertical ? clientY : clientX));
             }
           }}
           onMouseUp={function (e) {
@@ -141,7 +155,7 @@ function VerticalScrollBar({
           }}
           onWheel={function (e) {
             e.stopPropagation();
-            dispatch(ACTIONS.onWheel(e.deltaY));
+            dispatch(ACTIONS.onWheel(vertical ? e.deltaY : e.deltaX));
           }}
         ></div>
       ) : null}
@@ -149,4 +163,4 @@ function VerticalScrollBar({
   );
 }
 
-export default React.memo(VerticalScrollBar);
+export default React.memo(ScrollBar);

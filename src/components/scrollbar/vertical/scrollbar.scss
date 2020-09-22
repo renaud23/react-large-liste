@@ -7,9 +7,9 @@
   height: 100%;
 
   &.drag {
-    background-color: rgba(165, 148, 49, 0.438);
+    background-color: rgba(250, 232, 133, 0.438);
     &:hover {
-      background-color: rgba(165, 148, 49, 0.438);
+      background-color: rgba(250, 232, 133, 0.438);
    }
   }
 
@@ -18,9 +18,9 @@
   }
 
   .custom-vertical-scrollBar-track {
-    width: calc(100% - 1px);
+    width: 100%;
     position: absolute;
-    background-color: lime;
+    background-color: rgba(230, 230, 230, 0.9);
     &:hover{
       cursor: pointer;
     }
