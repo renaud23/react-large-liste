@@ -119,9 +119,10 @@ function ScrollBar({
     [windowMouseup, windowMousemove]
   );
 
+  const hide = max <= size;
   return (
     <div
-      className={classnames(rootClassName, { drag })}
+      className={classnames(rootClassName, { drag, hide })}
       role="scrollbar"
       aria-controls={ariaControl}
       aria-orientation="vertical"
@@ -131,7 +132,7 @@ function ScrollBar({
       ref={containerEl}
       onMouseDown={onMouseDown}
     >
-      {max > size ? (
+      {hide ? null : (
         <div
           className={`${rootClassName}-track`}
           style={getStyle(vertical, state)}
@@ -158,7 +159,7 @@ function ScrollBar({
             dispatch(ACTIONS.onWheel(vertical ? e.deltaY : e.deltaX));
           }}
         ></div>
-      ) : null}
+      )}
     </div>
   );
 }
