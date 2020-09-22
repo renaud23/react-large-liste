@@ -1,11 +1,26 @@
-.custom-list{
-    resize: both;
-    background-color: rgb(80,60,60);
-    color: beige;
-    height: 200px;
-    width: 400px;
-    display: inline-block;
-    overflow: hidden;  
-    margin-top: 50px;
-    margin-left: 50px;
+.custom-list {
+  resize: both;
+  background-color: rgb(80, 60, 60);
+  color: beige;
+  height: 200px;
+  width: 400px;
+  display: inline-block;
+  overflow: hidden;
+  margin-top: 50px;
+  margin-left: 50px;
+
+  .my-option {
+     
+     
+      line-height: 20px;
+      max-height: 20px;
+    
+     .id{
+        background-color: darkblue;
+        display: inline-block;
+        height: 100%;
+     }
+      
+     
+  }
 }

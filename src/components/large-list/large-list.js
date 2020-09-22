@@ -1,68 +1,103 @@
 import React, { useEffect, useRef, useCallback, useReducer } from "react";
-import { VerticalScrollbar } from "../scrollbar";
+import { VerticalScrollbar, HorizontalScrollbar } from "../scrollbar";
 import * as ACTIONS from "./actions";
 import reducer, { INITIAL_STATE } from "./reducer";
 import "./large-list.scss";
 
-function LargeList({ elements = [], rowHeight, start, component: Component }) {
+function LargeList({
+  elements = [],
+  maxWidth,
+  rowHeight,
+  start,
+  component: Component,
+}) {
   const containerEl = useRef();
+  const ulEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const { nbRows, wheel, startRow, maxHeight, startTop, aria } = state;
+  const {
+    id,
+    nbRows,
+    wheelVertical,
+    wheelHorizontal,
+    startRow,
+    maxHeight,
+    startTop,
+    ariaVertical,
+    ariaHorizontal,
+    scrollLeft,
+  } = state;
 
+  const { current } = containerEl;
   useEffect(
     function () {
-      if (containerEl.current) {
+      if (current) {
         const observer = new ResizeObserver(function () {
-          const { height } = containerEl.current.getBoundingClientRect();
-          dispatch(ACTIONS.onResize(height));
+          const { height, width } = current.getBoundingClientRect();
+          dispatch(ACTIONS.onResize(width, height));
         });
-        observer.observe(containerEl.current);
+        observer.observe(current);
       }
     },
-    [containerEl]
+    [current]
+  );
+
+  const { current: ulCurrent } = ulEl;
+  useEffect(
+    function () {
+      if (ulCurrent) {
+        ulCurrent.scrollLeft = scrollLeft;
+      }
+    },
+    [ulCurrent, scrollLeft]
   );
 
   useEffect(
     function () {
-      if (containerEl.current) {
+      if (current) {
         const { length } = elements;
-        dispatch(ACTIONS.onInit({ rowHeight, start, length }));
+        dispatch(ACTIONS.onInit({ maxWidth, rowHeight, start, length }));
       }
     },
-    [containerEl, rowHeight, start, elements]
+    [current, rowHeight, start, maxWidth, elements]
   );
 
   /* hook */
-  const onChangeScrollPercent = useCallback(function (percent) {
+  const onChangeScrollVerticalPercent = useCallback(function (percent) {
     if (!isNaN(percent)) {
-      dispatch(ACTIONS.onScroll(percent));
+      dispatch(ACTIONS.onScrollVertical(percent));
+    }
+  }, []);
+
+  const onChangeScrollHorizontalPercent = useCallback(function (percent) {
+    if (!isNaN(percent)) {
+      dispatch(ACTIONS.onScrollHorizontal(percent));
     }
   }, []);
 
   const keyDown = useCallback(
     function () {
-      dispatch(ACTIONS.onWheel(rowHeight));
+      dispatch(ACTIONS.onWheelVertical(rowHeight));
     },
     [rowHeight]
   );
 
   const keyUp = useCallback(
     function () {
-      dispatch(ACTIONS.onWheel(-rowHeight));
+      dispatch(ACTIONS.onWheelVertical(-rowHeight));
     },
     [rowHeight]
   );
 
   const keyPageUp = useCallback(
     function () {
-      dispatch(ACTIONS.onWheel(-rowHeight * nbRows));
+      dispatch(ACTIONS.onWheelVertical(-rowHeight * nbRows));
     },
     [nbRows, rowHeight]
   );
 
   const keyPageDown = useCallback(
     function () {
-      dispatch(ACTIONS.onWheel(rowHeight * nbRows));
+      dispatch(ACTIONS.onWheelVertical(rowHeight * nbRows));
     },
     [nbRows, rowHeight]
   );
@@ -70,7 +105,7 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
   const li = new Array(nbRows).fill(null).map(function (_, i) {
     const element = elements[startRow + i];
     return (
-      <li key={i} style={{ height: rowHeight }}>
+      <li key={i} style={{ height: rowHeight, width: maxWidth }}>
         <Component {...element} index={i} />
       </li>
     );
@@ -83,7 +118,7 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
       ref={containerEl}
       onWheel={function (e) {
         e.stopPropagation();
-        dispatch(ACTIONS.onWheel(e.deltaY));
+        dispatch(ACTIONS.onWheelVertical(e.deltaY));
       }}
       onKeyDown={function (e) {
         e.preventDefault();
@@ -102,14 +137,26 @@ function LargeList({ elements = [], rowHeight, start, component: Component }) {
       <VerticalScrollbar
         max={maxHeight}
         start={startTop}
-        ariaMax={aria.max}
-        ariaMin={aria.min}
-        ariaNow={aria.now}
-        ariaControl={aria.control}
-        onScroll={onChangeScrollPercent}
-        parentWheel={wheel}
+        ariaMax={ariaVertical.max}
+        ariaMin={ariaVertical.min}
+        ariaNow={ariaVertical.now}
+        ariaControl={ariaVertical.control}
+        onScroll={onChangeScrollVerticalPercent}
+        parentWheel={wheelVertical}
       />
-      <ul id={aria.control}>{li}</ul>
+      <HorizontalScrollbar
+        max={maxWidth}
+        start={0}
+        ariaMax={ariaHorizontal.max}
+        ariaMin={ariaHorizontal.min}
+        ariaNow={ariaHorizontal.now}
+        ariaControl={ariaHorizontal.control}
+        onScroll={onChangeScrollHorizontalPercent}
+        parentWheel={wheelHorizontal}
+      />
+      <ul ref={ulEl} id={id}>
+        {li}
+      </ul>
     </div>
   );
 }

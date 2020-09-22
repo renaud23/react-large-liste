@@ -3,6 +3,7 @@
   display: block;
   height:  100% ;
   
+  
   &:focus {
    outline: none; 
   }
@@ -15,8 +16,11 @@
     margin: 0;
     display: block;
      
-    overflow-x: hidden;
+    overflow : auto;
     white-space: nowrap;
-    width: max-content;
+    
+    li {
+      width: max-content;
+    }
   }
 }
