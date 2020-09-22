@@ -16,7 +16,8 @@
     margin: 0;
     display: block;
      
-    overflow : auto;
+    overflow-y: hidden;
+    overflow-x : auto;
     white-space: nowrap;
     
     li {

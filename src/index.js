@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ReactLargeList } from "./components";
+import OffsetChar from "./offset-char";
 import "./app.scss";
 
 const WORDS = [
@@ -52,6 +53,22 @@ const elements = new Array(15000).fill(null).map(function (_, i) {
   return { id: `Element-${i}`, content: getSentences() };
 });
 
+function App({ elements, offsetChar }) {
+  const maxWidth = elements.reduce(function (max, { id, content }) {
+    const w = (id.length + content.length) * offsetChar;
+    return Math.max(max, w);
+  }, 0);
+  return (
+    <ReactLargeList
+      elements={elements}
+      start={0}
+      rowHeight={20}
+      maxWidth={maxWidth}
+      component={LiRenderer}
+    />
+  );
+}
+
 function LiRenderer({ id, content }) {
   return (
     <div className="my-option">
@@ -64,13 +81,9 @@ function LiRenderer({ id, content }) {
 ReactDOM.render(
   <React.StrictMode>
     <div className="custom-list" tabIndex="0">
-      <ReactLargeList
-        elements={elements}
-        start={0}
-        rowHeight={20}
-        maxWidth={800}
-        component={LiRenderer}
-      ></ReactLargeList>
+      <OffsetChar>
+        <App elements={elements} />
+      </OffsetChar>
     </div>
   </React.StrictMode>,
   document.getElementById("root")
