@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useCallback, useReducer } from "react";
-// import ResizeObserver from "resize-observer-polyfill";
+import { useResizeObserver } from "../commons";
 import classnames from "classnames";
 import { VerticalScrollbar, HorizontalScrollbar } from "../scrollbar";
 import * as ACTIONS from "./actions";
@@ -14,7 +14,6 @@ function LargeList({
   component: Component,
   className,
 }) {
-  const containerEl = useRef();
   const ulEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const {
@@ -30,27 +29,6 @@ function LargeList({
     scrollLeft,
   } = state;
 
-  const { current } = containerEl;
-  useEffect(
-    function () {
-      let observer;
-      if (current) {
-        observer = new ResizeObserver(function () {
-          const { height, width } = current.getBoundingClientRect();
-          dispatch(ACTIONS.onResize(width, height));
-        });
-        observer.observe(current);
-      }
-
-      return function () {
-        if (observer) {
-          observer.unobserve(current);
-        }
-      };
-    },
-    [current]
-  );
-
   const { current: ulCurrent } = ulEl;
   useEffect(
     function () {
@@ -61,14 +39,18 @@ function LargeList({
     [ulCurrent, scrollLeft]
   );
 
+  const resizeCallback = useCallback(function (width, height) {
+    dispatch(ACTIONS.onResize(width, height));
+  }, []);
+  const containerEl = useResizeObserver(resizeCallback);
   useEffect(
     function () {
-      if (current) {
+      if (containerEl.current) {
         const { length } = elements;
         dispatch(ACTIONS.onInit({ maxWidth, rowHeight, start, length }));
       }
     },
-    [current, rowHeight, start, maxWidth, elements]
+    [containerEl, rowHeight, start, maxWidth, elements]
   );
 
   /* hook */

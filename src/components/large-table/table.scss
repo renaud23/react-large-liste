@@ -1,14 +1,15 @@
 .react-large-table {
-  position: relative;
-  width: 800px;
-  height: 200px;
-  background-color: brown;
-
-  margin-top: 300px;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
 
   table {
-    width: 100%;
-    height: 100%;
+    
+    thead{
+      tr {
+        th {}
+      }
+    }
 
     tbody {
       tr {
