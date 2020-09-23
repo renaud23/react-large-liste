@@ -3,7 +3,7 @@ import ReactLargeTable from "../components/large-table";
 import generate from "./random-table-data";
 
 export function DefaultTable() {
-  const data = generate(100, 1000);
+  const data = generate(50, 1000);
   return (
     <div className="story-react-large-table">
       <ReactLargeTable data={data} rowHeight={20} />

@@ -32,13 +32,13 @@ const WORDS = [
   "explicabo",
 ];
 
-function randomPos(length) {
+export function randomInt(length) {
   return Math.trunc(Math.random() * length);
 }
 
 function getSentences(sentence = "", current) {
   const next =
-    randomPos(WORDS.length / 2) + current || randomPos(WORDS.length / 2);
+    randomInt(WORDS.length / 2) + current || randomInt(WORDS.length / 2);
   if (next < WORDS.length - 1) {
     return getSentences(`${sentence} ${WORDS[next]}`, next);
   }
