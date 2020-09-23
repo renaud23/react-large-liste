@@ -33,13 +33,20 @@ function LargeList({
   const { current } = containerEl;
   useEffect(
     function () {
+      let observer;
       if (current) {
-        const observer = new ResizeObserver(function () {
+        observer = new ResizeObserver(function () {
           const { height, width } = current.getBoundingClientRect();
           dispatch(ACTIONS.onResize(width, height));
         });
         observer.observe(current);
       }
+
+      return function () {
+        if (observer) {
+          observer.unobserve(current);
+        }
+      };
     },
     [current]
   );
