@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback, useReducer, useRef } from "react";
-// import ResizeObserver from "resize-observer-polyfill";
+import React, { useEffect, useCallback, useReducer } from "react";
+import { useResizeObserver } from "../../commons";
 import * as ACTIONS from "./actions";
 import classnames from "classnames";
 import reducer, { INITIAL_STATE } from "./reducer";
@@ -29,7 +29,6 @@ function ScrollBar({
   vertical = false,
   onScroll = () => null,
 }) {
-  const containerEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const { drag, scrollPercent, refresh, size } = state;
 
@@ -43,6 +42,15 @@ function ScrollBar({
     [parentWheel]
   );
 
+  const resizeCallback = useCallback(
+    function (width, height) {
+      dispatch(ACTIONS.onResize(vertical ? height : width));
+    },
+    [vertical]
+  );
+
+  const containerEl = useResizeObserver(resizeCallback);
+
   useEffect(
     function () {
       if (containerEl.current && max) {
@@ -52,27 +60,6 @@ function ScrollBar({
       }
     },
     [start, containerEl, max, vertical]
-  );
-
-  const { current } = containerEl;
-  useEffect(
-    function () {
-      let observer;
-      if (current) {
-        observer = new ResizeObserver(function () {
-          const { width, height } = getOffsetSize(current);
-          dispatch(ACTIONS.onResize(vertical ? height : width));
-        });
-        observer.observe(current);
-      }
-
-      return function () {
-        if (observer) {
-          observer.unobserve(current);
-        }
-      };
-    },
-    [current, vertical]
   );
 
   useEffect(

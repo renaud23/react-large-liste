@@ -1,54 +1,31 @@
-import React, { useState, useEffect, useRef } from "react";
-import classnames from "classnames";
-import { VerticalScrollbar } from "../scrollbar";
+import React, { useReducer, useEffect, useCallback } from "react";
+import * as ACTIONS from "./actions";
+import { useResizeObserver } from "../commons";
+import reducer, { INITIAL_STATE } from "./reducer";
 import "./table.scss";
 
-function ReactLargeTable({ className }) {
-  const containerEl = useRef();
-  const [scrollTop, setScrollTop] = useState(undefined);
-  const [viewportHeight, setViewportHeight] = useState(undefined);
-  const [ariaVerticalScroll] = useState({
-    controls: "table",
-    max: 0,
-    min: 0,
-    now: 0,
-  });
-  useEffect(
-    function () {
-      console.log(scrollTop);
-    },
-    [scrollTop]
-  );
+function ReactLargeTable({ data = [], rowHeight }) {
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+
+  const { idTable } = state;
 
   useEffect(
     function () {
-      if (containerEl.current) {
-        const bRect = containerEl.current.getBoundingClientRect();
-        setViewportHeight(bRect.height);
-      }
+      dispatch(ACTIONS.onInit({ data, rowHeight }));
     },
-    [containerEl]
+    [data, rowHeight]
   );
+
+  const resizeCallback = useCallback(function (width, height) {
+    console.log("resize", { width, height });
+  }, []);
+
+  const containerEl = useResizeObserver(resizeCallback);
   return (
-    <div
-      className={classnames("react-large-table", className)}
-      ref={containerEl}
-    >
-      <VerticalScrollbar
-        height={viewportHeight}
-        max={800}
-        start={0}
-        aria={ariaVerticalScroll}
-        onScroll={function (top) {
-          setScrollTop(top);
-        }}
-      />
-      <table className="">
-        <thead className=""></thead>
-        <tbody className=""></tbody>
-      </table>
+    <div className="react-large-table" ref={containerEl}>
+      <table id={idTable}></table>
     </div>
   );
 }
 
-export default ReactLargeTable;
+export default React.memo(ReactLargeTable);
