@@ -57,13 +57,20 @@ function ScrollBar({
   const { current } = containerEl;
   useEffect(
     function () {
+      let observer;
       if (current) {
-        const observer = new ResizeObserver(function () {
-          const { width, height } = getOffsetSize(current); //current.getBoundingClientRect();
+        observer = new ResizeObserver(function () {
+          const { width, height } = getOffsetSize(current);
           dispatch(ACTIONS.onResize(vertical ? height : width));
         });
         observer.observe(current);
       }
+
+      return function () {
+        if (observer) {
+          observer.unobserve(current);
+        }
+      };
     },
     [current, vertical]
   );

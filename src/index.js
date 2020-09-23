@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ReactLargeList } from "./components";
-import OffsetChar from "./offset-char";
+import OffsetChar from "./stories/offset-char";
 import "./app.scss";
 
 const WORDS = [
@@ -37,9 +37,11 @@ const WORDS = [
   "sunt",
   "explicabo",
 ];
+
 function randomPos(length) {
   return Math.trunc(Math.random() * length);
 }
+
 function getSentences(sentence = "", current) {
   const next =
     randomPos(WORDS.length / 2) + current || randomPos(WORDS.length / 2);
