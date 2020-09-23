@@ -1,7 +1,13 @@
 import React, { useEffect, useCallback, useReducer, useRef } from "react";
+// import ResizeObserver from "resize-observer-polyfill";
 import * as ACTIONS from "./actions";
 import classnames from "classnames";
 import reducer, { INITIAL_STATE } from "./reducer";
+
+function getOffsetSize(e) {
+  //e.getBoundingClientRect();
+  return { width: e.clientWidth, height: e.clientHeight - 0 };
+}
 
 function getStyle(vertical, state) {
   const { tPos, tSize } = state;
@@ -40,7 +46,8 @@ function ScrollBar({
   useEffect(
     function () {
       if (containerEl.current && max) {
-        const { width, height } = containerEl.current.getBoundingClientRect();
+        const { width, height } = getOffsetSize(containerEl.current);
+        getOffsetSize(containerEl.current);
         dispatch(ACTIONS.onInit(start, vertical ? height : width, max));
       }
     },
@@ -52,7 +59,7 @@ function ScrollBar({
     function () {
       if (current) {
         const observer = new ResizeObserver(function () {
-          const { width, height } = current.getBoundingClientRect();
+          const { width, height } = getOffsetSize(current); //current.getBoundingClientRect();
           dispatch(ACTIONS.onResize(vertical ? height : width));
         });
         observer.observe(current);

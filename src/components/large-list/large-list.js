@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useCallback, useReducer } from "react";
+// import ResizeObserver from "resize-observer-polyfill";
+import classnames from "classnames";
 import { VerticalScrollbar, HorizontalScrollbar } from "../scrollbar";
 import * as ACTIONS from "./actions";
 import reducer, { INITIAL_STATE } from "./reducer";
@@ -10,6 +12,7 @@ function LargeList({
   rowHeight,
   start,
   component: Component,
+  className,
 }) {
   const containerEl = useRef();
   const ulEl = useRef();
@@ -113,7 +116,7 @@ function LargeList({
 
   return (
     <div
-      className="react-large-list"
+      className={classnames("react-large-list", className)}
       tabIndex="0"
       ref={containerEl}
       onWheel={function (e) {

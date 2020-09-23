@@ -49,7 +49,7 @@ function getSentences(sentence = "", current) {
   return sentence;
 }
 
-const elements = new Array(15000).fill(null).map(function (_, i) {
+const elements = new Array(150).fill(null).map(function (_, i) {
   return { id: `Element-${i}`, content: getSentences() };
 });
 
@@ -65,6 +65,7 @@ function App({ elements, offsetChar }) {
       rowHeight={20}
       maxWidth={maxWidth}
       component={LiRenderer}
+      className="custom-theme-winter"
     />
   );
 }
