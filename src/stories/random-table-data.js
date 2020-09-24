@@ -10,9 +10,9 @@ function generate(nbCols, nbRows) {
       label: `column${i}`,
     };
   });
-  const rows = new Array(nbRows).fill(null).map(function () {
-    return header.reduce(function (a, { path }) {
-      return { ...a, [path]: "" };
+  const rows = new Array(nbRows).fill(null).map(function (_, i) {
+    return header.reduce(function (a, { path }, j) {
+      return { ...a, [path]: `Cell[${j}, ${i}]` };
     }, {});
   });
   return { header, rows };

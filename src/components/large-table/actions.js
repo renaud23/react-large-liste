@@ -1,7 +1,7 @@
 export const ON_INIT = "react-large-table/on-init";
-export const onInit = ({ rowHeight, data }) => ({
+export const onInit = ({ rowHeight, headerHeight, data }) => ({
   type: ON_INIT,
-  payload: { rowHeight, data },
+  payload: { rowHeight, headerHeight, data },
 });
 
 export const ON_RESIZE = "react-large-table/on-resize";
@@ -16,5 +16,14 @@ export const onHorizontalScroll = (percent) => ({
   payload: { percent },
 });
 
+export const ON_VERTICAL_SCROLL = "react-large-table/on-vertical-scroll";
+export const onVerticalScroll = (percent) => ({
+  type: ON_VERTICAL_SCROLL,
+  payload: { percent },
+});
+
 export const ON_REFRESH_COLUMNS = "react-large-table/on-columns";
 export const onRefreshColumns = () => ({ type: ON_REFRESH_COLUMNS });
+
+export const ON_REFRESH_ROWS = "react-large-table/on-rows";
+export const onRefreshRows = () => ({ type: ON_REFRESH_ROWS });

@@ -100,4 +100,9 @@
   height: 300px;
   resize: both;
   overflow: hidden;
+
+  .custom-vertical-scrollBar {
+      height: calc(100% - 25px);
+      top: 25px;
+  }
 }

@@ -1,79 +1,31 @@
-import React, {
-  useRef,
-  useReducer,
-  useEffect,
-  useCallback,
-  useState,
-} from "react";
-import { HorizontalScrollbar } from "../scrollbar";
+import React, { useRef, useReducer, useEffect, useCallback } from "react";
+import { HorizontalScrollbar, VerticalScrollbar } from "../scrollbar";
+import Header from "./header";
+import Body from "./body";
 import * as ACTIONS from "./actions";
 import { useResizeObserver } from "../commons";
-import classnames from "classnames";
 import reducer, { INITIAL_STATE } from "./reducer";
 import "./table.scss";
 
-function Th({ width, children }) {
-  const thEl = useRef();
-  const [delta, setDelta] = useState(0);
-  useEffect(
-    function () {
-      const { current } = thEl;
-      if (current) {
-        const styles = window.getComputedStyle(current);
-
-        const marginLeft = parseInt(styles.getPropertyValue("margin-left"));
-        const marginRight = parseInt(styles.getPropertyValue("margin-right"));
-        const paddingLeft = parseInt(styles.getPropertyValue("padding-left"));
-        const paddingRight = parseInt(styles.getPropertyValue("padding-right"));
-        setDelta(marginLeft + marginRight + paddingLeft + paddingRight);
-      }
-    },
-    [thEl]
-  );
-
-  return (
-    <th
-      ref={thEl}
-      style={{ width: width - delta }}
-      className={classnames("react-large-table-th")}
-    >
-      {children}
-    </th>
-  );
-}
-
-function Header({ colStart, nbCols, diffWidth, header }) {
-  if (nbCols) {
-    const th = new Array(nbCols).fill(null).map(function (_, i) {
-      const { width, label } = header[i + colStart];
-      return (
-        <Th width={width} key={i}>
-          {label}
-        </Th>
-      );
-    });
-    return (
-      <thead className={classnames("react-large-table-thead")}>
-        <tr>{th}</tr>
-      </thead>
-    );
-  }
-  return null;
-}
-
-function ReactLargeTable({ data = [], rowHeight }) {
+function ReactLargeTable({ data = [], rowHeight, headerHeight }) {
   const tableEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const {
     idTable,
-    header,
     maxWidth,
+    maxHeight,
     horizontalScrollPercent,
+    verticalScrollPercent,
     viewportWidth,
+    viewportHeight,
     colStart,
     nbCols,
+    rowStart,
+    nbRows,
     diffWidth,
+    diffHeight,
   } = state;
+  const { header } = data;
 
   useEffect(
     function () {
@@ -86,9 +38,18 @@ function ReactLargeTable({ data = [], rowHeight }) {
 
   useEffect(
     function () {
-      dispatch(ACTIONS.onInit({ data, rowHeight }));
+      if (tableEl.current) {
+        tableEl.current.scrollTop = diffHeight;
+      }
     },
-    [data, rowHeight]
+    [diffHeight, tableEl]
+  );
+
+  useEffect(
+    function () {
+      dispatch(ACTIONS.onInit({ data, rowHeight, headerHeight }));
+    },
+    [data, rowHeight, headerHeight]
   );
 
   useEffect(
@@ -96,6 +57,13 @@ function ReactLargeTable({ data = [], rowHeight }) {
       dispatch(ACTIONS.onRefreshColumns());
     },
     [horizontalScrollPercent, viewportWidth]
+  );
+
+  useEffect(
+    function () {
+      dispatch(ACTIONS.onRefreshRows());
+    },
+    [verticalScrollPercent, viewportHeight]
   );
 
   /* callbacks */
@@ -107,9 +75,23 @@ function ReactLargeTable({ data = [], rowHeight }) {
     dispatch(ACTIONS.onHorizontalScroll(percent));
   }, []);
 
+  const onVerticalScrollCallback = useCallback(function (percent) {
+    dispatch(ACTIONS.onVerticalScroll(percent));
+  }, []);
+
   const containerEl = useResizeObserver(resizeCallback);
   return (
     <div className="react-large-table" ref={containerEl}>
+      <VerticalScrollbar
+        max={maxHeight}
+        start={0}
+        ariaMax={0}
+        ariaMin={0}
+        ariaNow={0}
+        ariaControl={idTable}
+        onScroll={onVerticalScrollCallback}
+        parentWheel={0}
+      />
       <HorizontalScrollbar
         max={maxWidth}
         start={0}
@@ -124,8 +106,17 @@ function ReactLargeTable({ data = [], rowHeight }) {
         <Header
           colStart={colStart}
           nbCols={nbCols}
-          diffWidth={diffWidth}
+          diffHeight={Math.trunc(diffHeight)}
           header={header}
+          headerHeight={headerHeight}
+        />
+        <Body
+          data={data}
+          rowStart={rowStart}
+          rowHeight={rowHeight}
+          nbRows={nbRows}
+          colStart={colStart}
+          nbCols={nbCols}
         />
       </table>
     </div>

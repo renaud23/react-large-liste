@@ -8,6 +8,7 @@ export const INITIAL_STATE = {
   idTable: undefined,
   header: undefined,
   rowHeight: undefined,
+  headerHeight: undefined,
 
   viewportWidth: undefined,
   viewportHeight: undefined,
@@ -25,6 +26,7 @@ export const INITIAL_STATE = {
   rowStart: undefined,
   nbRows: undefined,
   maxRows: undefined,
+  diffHeight: 0,
 };
 
 /* **** */
@@ -41,7 +43,12 @@ function extractFromPayload(action, ...what) {
 /* ******* */
 
 function reduceOnInit(state, action) {
-  const { data, rowHeight } = extractFromPayload(action, "data", "rowHeight");
+  const { data, rowHeight, headerHeight } = extractFromPayload(
+    action,
+    "data",
+    "rowHeight",
+    "headerHeight"
+  );
   const idTable = `react-large-table-id-${__TABLE_ID__++}`;
   const { header, rows } = data;
   const sumColWidth = header.reduce(
@@ -62,10 +69,15 @@ function reduceOnInit(state, action) {
     ...state,
     idTable,
     rowHeight,
-    maxRow: rows.length,
+    headerHeight,
+
     maxWidth,
     header,
     sumColWidth,
+
+    rowStart: 0,
+    maxRow: rows.length,
+    maxHeight: rows.length * rowHeight,
   };
 }
 
@@ -79,6 +91,11 @@ function reduceOnHorizontalScroll(state, action) {
   return { ...state, horizontalScrollPercent: percent };
 }
 
+function reduceOnVerticalScroll(state, action) {
+  const { percent } = extractFromPayload(action, "percent");
+  return { ...state, verticalScrollPercent: percent };
+}
+
 function reduceOnRefreshColumns(state) {
   const {
     sumColWidth,
@@ -89,7 +106,6 @@ function reduceOnRefreshColumns(state) {
   } = state;
   const minx = (maxWidth - viewportWidth) * horizontalScrollPercent;
   const maxx = minx + viewportWidth;
-
   if (minx < maxx) {
     const { colStart, nbCols } = header.reduce(
       function ({ colStart, nbCols, x }, column, i) {
@@ -114,6 +130,25 @@ function reduceOnRefreshColumns(state) {
   return state;
 }
 
+function reduceOnRefreshRows(state, action) {
+  const {
+    viewportHeight,
+    rowHeight,
+    headerHeight,
+    maxHeight,
+    verticalScrollPercent,
+  } = state;
+  const nbRows = Math.trunc((viewportHeight - headerHeight) / rowHeight);
+  // const miny =
+  //   (maxHeight - (viewportHeight - headerHeight)) * verticalScrollPercent;
+  const rowStart = Math.trunc(
+    ((maxHeight - nbRows * rowHeight) * verticalScrollPercent) / rowHeight
+  );
+  // const diffHeight = miny - rowStart * rowHeight;
+
+  return { ...state, nbRows, rowStart };
+}
+
 function reducer(state, action) {
   const { type } = action;
   switch (type) {
@@ -125,6 +160,10 @@ function reducer(state, action) {
       return reduceOnHorizontalScroll(state, action);
     case ACTIONS.ON_REFRESH_COLUMNS:
       return reduceOnRefreshColumns(state, action);
+    case ACTIONS.ON_REFRESH_ROWS:
+      return reduceOnRefreshRows(state, action);
+    case ACTIONS.ON_VERTICAL_SCROLL:
+      return reduceOnVerticalScroll(state, action);
     default:
       return state;
   }
