@@ -1,13 +1,25 @@
 import React from "react";
 import ReactLargeTable from "../components/large-table";
+import classnames from "classnames";
 import generate from "./random-table-data";
 
+export function CustomCell({ content, column, row }) {
+  const { type, value } = content;
+  return <span className={classnames("my-custom-cell", type)}>{value}</span>;
+}
+
 export function DefaultTable() {
-  const data = generate(30, 10000);
+  const data = generate(30, 1000);
 
   return (
     <div className="story-react-large-table">
-      <ReactLargeTable data={data} rowHeight={20} headerHeight={25} />
+      <ReactLargeTable
+        className="my-custom-theme"
+        data={data}
+        rowHeight={25}
+        headerHeight={30}
+        cellComponent={CustomCell}
+      />
     </div>
   );
 }

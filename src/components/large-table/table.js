@@ -1,13 +1,20 @@
 import React, { useRef, useReducer, useEffect, useCallback } from "react";
+import classnames from "classnames";
 import { HorizontalScrollbar, VerticalScrollbar } from "../scrollbar";
 import Header from "./header";
-import Body from "./body";
+import Body, { DefaultCellComponent } from "./body";
 import * as ACTIONS from "./actions";
 import { useResizeObserver } from "../commons";
 import reducer, { INITIAL_STATE } from "./reducer";
 import "./table.scss";
 
-function ReactLargeTable({ data = [], rowHeight, headerHeight }) {
+function ReactLargeTable({
+  data = [],
+  rowHeight,
+  headerHeight,
+  className,
+  cellComponent = DefaultCellComponent,
+}) {
   const tableEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
   const {
@@ -81,7 +88,10 @@ function ReactLargeTable({ data = [], rowHeight, headerHeight }) {
 
   const containerEl = useResizeObserver(resizeCallback);
   return (
-    <div className="react-large-table" ref={containerEl}>
+    <div
+      className={classnames("react-large-table", className)}
+      ref={containerEl}
+    >
       <VerticalScrollbar
         max={maxHeight}
         start={0}
@@ -117,6 +127,7 @@ function ReactLargeTable({ data = [], rowHeight, headerHeight }) {
           nbRows={nbRows}
           colStart={colStart}
           nbCols={nbCols}
+          cellComponent={cellComponent}
         />
       </table>
     </div>

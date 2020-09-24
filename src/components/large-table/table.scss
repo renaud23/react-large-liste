@@ -11,14 +11,21 @@
 
   table,
   thead,
+  tbody,
   tr,
   th,
   td {
-    padding: 0;
     margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+    
   }
   table {
-
+border-spacing: 0;
     z-index: 0;
     display: block;
       width:  100%;
@@ -34,11 +41,9 @@
         width: max-content;
         height: 100%;
         th {
-          background-color: yellow;
+         
           height: 100%;
-          margin: 0 1px 0 0;
-          // padding: 0 1px 0 0;
-          // border: solid 1px blue;
+          
           display: inline-block;
           overflow-x: hidden;
           white-space: nowrap;
@@ -51,10 +56,11 @@
       
       tr {
         display: block;
-        width: max-content;
-        // height: 100%;
+        width: max-content; 
         td {
-          
+          display: inline-block;
+          overflow-x: hidden;
+          white-space: nowrap;
         }
       }
     }

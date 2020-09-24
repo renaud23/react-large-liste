@@ -92,8 +92,7 @@
   }
 }
 
-
-.story-react-large-table{
+.story-react-large-table {
   display: inline-block;
   background-color: green;
   width: 500px;
@@ -102,7 +101,45 @@
   overflow: hidden;
 
   .custom-vertical-scrollBar {
-      height: calc(100% - 25px);
-      top: 25px;
+    height: calc(100% - 30px);
+    top: 30px;
+  }
+}
+
+.my-custom-theme {
+  .my-custom-cell {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  table {
+    background-color: darkslategray;
+    color: ivory;
+    font-family:"Lucida Console", Monaco, monospace;
+
+    thead {
+      tr {
+        th {
+          background-color: darkblue;
+          color: gold;
+          margin: 0;
+          border-right: solid 1px cyan;
+          border-bottom:solid 1px cyan;
+        }
+      }
+    }
+
+    tbody {
+      td {
+        border-right: solid 1px lightslategray;
+        border-bottom: solid 1px lightslategray;
+
+        &:hover {
+          background-color: midnightblue;
+          color: ivory;
+        }
+      }
+    }
   }
 }

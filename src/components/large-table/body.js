@@ -1,17 +1,38 @@
 import React from "react";
+import { useOuterCssSize } from "../commons";
 
-function Td({ children, width, height }) {
-  // TODO check delta
-  return <td style={{ width, height }}>{children}</td>;
+export function DefaultCellComponent({ content, column, row }) {
+  return <span title={`cell(${row}, ${column})`}>{content}</span>;
 }
 
-function Row({ nbCols, colStart, header, height, row }) {
+function Td({ children, width, height }) {
+  const [tdEl, delta] = useOuterCssSize();
+
+  return (
+    <td
+      ref={tdEl}
+      style={{ width: width - delta.width, height: height - delta.height }}
+    >
+      {children}
+    </td>
+  );
+}
+
+function Row({
+  cellComponent: Cell,
+  nbCols,
+  colStart,
+  header,
+  height,
+  row,
+  index,
+}) {
   const td = new Array(nbCols).fill(null).map(function (_, j) {
     const { width, path } = header[j + colStart];
-    const content = path in row ? row[path] : "";
+    const content = path in row ? row[path] : undefined;
     return (
       <Td key={j} width={width} height={height}>
-        {content}
+        <Cell content={content} row={index} column={j} />
       </Td>
     );
   });
@@ -19,7 +40,15 @@ function Row({ nbCols, colStart, header, height, row }) {
   return <tr style={{ height }}>{td}</tr>;
 }
 
-function Body({ data, rowStart, nbRows, colStart, nbCols, rowHeight }) {
+function Body({
+  data,
+  rowStart,
+  nbRows,
+  colStart,
+  nbCols,
+  rowHeight,
+  cellComponent,
+}) {
   const { header, rows } = data;
 
   if (nbRows && nbCols) {
@@ -28,11 +57,13 @@ function Body({ data, rowStart, nbRows, colStart, nbCols, rowHeight }) {
       return (
         <Row
           key={i}
+          index={i}
           nbCols={nbCols}
           colStart={colStart}
           header={header}
           height={rowHeight}
           row={row}
+          cellComponent={cellComponent}
         />
       );
     });

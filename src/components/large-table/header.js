@@ -7,7 +7,7 @@ function Header({ colStart, nbCols, diffHeight, header, headerHeight }) {
     const th = new Array(nbCols).fill(null).map(function (_, i) {
       const { width, label } = header[i + colStart];
       return (
-        <Th width={width} key={i}>
+        <Th width={width} height={headerHeight} key={i}>
           {label}
         </Th>
       );
