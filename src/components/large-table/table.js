@@ -7,7 +7,8 @@ import Header from "./header";
 import Body, { DefaultCellComponent } from "./body";
 import * as ACTIONS from "./actions";
 import { useResizeObserver } from "../commons";
-import reducer, { INITIAL_STATE } from "./reducer";
+import reducer, { INITIAL_STATE, compose } from "./reducer";
+import reducerKeyboard from "./reducer-keyboard";
 import RowNum from "./row-num";
 import "./table.scss";
 
@@ -20,7 +21,10 @@ function ReactLargeTable({
   rowNumComponent = RowContentDefaultRenderer,
 }) {
   const tableEl = useRef();
-  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(
+    compose(reducer, reducerKeyboard),
+    INITIAL_STATE
+  );
   const {
     idTable,
     maxWidth,
@@ -34,6 +38,7 @@ function ReactLargeTable({
     nbRows,
     diffWidth,
     diffHeight,
+    verticalWheel,
   } = state;
   const { header } = data;
 
@@ -89,10 +94,25 @@ function ReactLargeTable({
     dispatch(ACTIONS.onVerticalScroll(percent));
   }, []);
 
+  const onMouseWheelCallback = useCallback(function (e) {
+    e.stopPropagation();
+    dispatch(ACTIONS.onVerticalWheel(e.deltaY));
+  }, []);
+
+  const onKeyDownCallback = useCallback(function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch(ACTIONS.onKeyDown(e.key));
+  }, []);
+
   const containerEl = useResizeObserver(resizeCallback);
   return (
     <ContextTable.Provider value={[state, dispatch]}>
-      <div className={classnames("react-large-table-container", className)}>
+      <div
+        className={classnames("react-large-table-container", className)}
+        tabIndex="0"
+        onKeyDown={onKeyDownCallback}
+      >
         <RowNum rowNumComponent={rowNumComponent} />
         <div className={classnames("react-large-table")} ref={containerEl}>
           <VerticalScrollbar
@@ -103,7 +123,7 @@ function ReactLargeTable({
             ariaNow={0}
             ariaControl={idTable}
             onScroll={onVerticalScrollCallback}
-            parentWheel={0}
+            parentWheel={verticalWheel}
           />
           <HorizontalScrollbar
             max={maxWidth}
@@ -115,7 +135,7 @@ function ReactLargeTable({
             onScroll={onHorizontalScrollCallback}
             parentWheel={0}
           />
-          <table id={idTable} ref={tableEl}>
+          <table id={idTable} ref={tableEl} onWheel={onMouseWheelCallback}>
             <Header
               colStart={colStart}
               nbCols={nbCols}

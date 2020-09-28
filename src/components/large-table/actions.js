@@ -27,3 +27,12 @@ export const onRefreshColumns = () => ({ type: ON_REFRESH_COLUMNS });
 
 export const ON_REFRESH_ROWS = "react-large-table/on-rows";
 export const onRefreshRows = () => ({ type: ON_REFRESH_ROWS });
+
+export const ON_VERTICAL_WHEEL = "react-large-table/on-vertical-wheel";
+export const onVerticalWheel = (delta) => ({
+  type: ON_VERTICAL_WHEEL,
+  payload: { delta },
+});
+
+export const ON_KEYDOWN = "react-large-table/on-key-down";
+export const onKeyDown = (key) => ({ type: ON_KEYDOWN, payload: { key } });

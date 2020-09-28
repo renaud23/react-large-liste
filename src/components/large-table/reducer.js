@@ -4,6 +4,19 @@ let __TABLE_ID__ = 1;
 
 /* ******* */
 
+export function compose(...reducers) {
+  return reducers.reverse().reduce(
+    function (a, b) {
+      return function (state, action) {
+        return a(b(state, action), action);
+      };
+    },
+    (state) => state
+  );
+}
+
+/* ******* */
+
 export const INITIAL_STATE = {
   idTable: undefined,
   header: undefined,
@@ -27,10 +40,12 @@ export const INITIAL_STATE = {
   nbRows: undefined,
   maxRows: undefined,
   diffHeight: 0,
+
+  verticalWheel: undefined,
 };
 
 /* **** */
-function extractFromPayload(action, ...what) {
+export function extractFromPayload(action, ...what) {
   return what.reduce(function (a, attr) {
     const { payload } = action;
     if (attr in payload) {
@@ -113,6 +128,11 @@ function reduceOnVerticalScroll(state, action) {
   return { ...state, verticalScrollPercent: percent };
 }
 
+function reduceOnVerticalWheel(state, action) {
+  const { delta } = extractFromPayload(action, "delta");
+  return { ...state, verticalWheel: { delta } };
+}
+
 function reduceOnRefreshColumns(state) {
   const {
     sumColWidth,
@@ -169,6 +189,8 @@ function reducer(state, action) {
       return reduceOnRefreshRows(state, action);
     case ACTIONS.ON_VERTICAL_SCROLL:
       return reduceOnVerticalScroll(state, action);
+    case ACTIONS.ON_VERTICAL_WHEEL:
+      return reduceOnVerticalWheel(state, action);
     default:
       return state;
   }
