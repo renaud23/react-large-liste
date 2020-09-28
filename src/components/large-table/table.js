@@ -22,7 +22,7 @@ function ReactLargeTable({
 }) {
   const tableEl = useRef();
   const [state, dispatch] = useReducer(
-    compose(reducer, reducerKeyboard),
+    reducer, //compose(reducer, reducerKeyboard),
     INITIAL_STATE
   );
   const {
@@ -40,7 +40,6 @@ function ReactLargeTable({
     diffHeight,
     verticalWheel,
   } = state;
-  const { header } = data;
 
   useEffect(
     function () {
@@ -136,13 +135,7 @@ function ReactLargeTable({
             parentWheel={0}
           />
           <table id={idTable} ref={tableEl} onWheel={onMouseWheelCallback}>
-            <Header
-              colStart={colStart}
-              nbCols={nbCols}
-              diffHeight={Math.trunc(diffHeight)}
-              header={header}
-              headerHeight={headerHeight}
-            />
+            <Header />
             <Body
               data={data}
               rowStart={rowStart}

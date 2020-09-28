@@ -22,7 +22,7 @@ export const onVerticalScroll = (percent) => ({
   payload: { percent },
 });
 
-export const ON_REFRESH_COLUMNS = "react-large-table/on-columns";
+export const ON_REFRESH_COLUMNS = "react-large-table/on-refresh-columns";
 export const onRefreshColumns = () => ({ type: ON_REFRESH_COLUMNS });
 
 export const ON_REFRESH_ROWS = "react-large-table/on-rows";
@@ -36,3 +36,9 @@ export const onVerticalWheel = (delta) => ({
 
 export const ON_KEYDOWN = "react-large-table/on-key-down";
 export const onKeyDown = (key) => ({ type: ON_KEYDOWN, payload: { key } });
+
+export const ON_RESIZE_COLUMN = "react-large-table/on-resize-column";
+export const onResizeColumn = (index, delta) => ({
+  type: ON_RESIZE_COLUMN,
+  payload: { index, delta },
+});

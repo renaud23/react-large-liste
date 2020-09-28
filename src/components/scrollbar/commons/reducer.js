@@ -8,6 +8,7 @@ export const INITIAL_STATE = {
   clientPos: undefined,
   scrollPercent: 0,
   refresh: false,
+  first: true,
 };
 
 /* ************************** */
@@ -17,9 +18,17 @@ const __TRACK_MIN_WIDTH__ = 10;
 function reduceOnInit(state, action) {
   const { payload } = action;
   const { size, max, start } = payload;
+  const { scrollPercent, first } = state;
   const pSize = Math.trunc((size / max) * size);
   const tSize = Math.max(pSize, __TRACK_MIN_WIDTH__);
-  const tPos = Math.min(Math.trunc((start / max) * size), size - tSize);
+  if (first) {
+    const tPos = Math.min(Math.trunc((start / max) * size), size - tSize);
+    return { ...state, size, max, start, tPos, tSize, pSize, first: false };
+  }
+  const tPos = Math.max(
+    Math.min(scrollPercent * (size - tSize), size - tSize),
+    0
+  );
   return { ...state, size, max, start, tPos, tSize, pSize };
 }
 

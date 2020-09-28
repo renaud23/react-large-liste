@@ -1,0 +1,19 @@
+.react-large-table-track{
+    position: absolute;
+    &.vertical {
+        right: 0;
+        display: inline-block;
+        background-color: transparent;
+        height: 100%;
+        cursor: col-resize;
+        width: 6px;
+    }
+    &.horizontal {}
+
+    .track-bar {
+        position: fixed;
+        z-index: 1;
+        height: 100%;
+        border-right: solid 2px black;
+    }
+}

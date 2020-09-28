@@ -5,13 +5,18 @@ let __TABLE_ID__ = 1;
 /* ******* */
 
 export function compose(...reducers) {
-  return reducers.reverse().reduce(
-    function (a, b) {
-      return function (state, action) {
-        return a(b(state, action), action);
-      };
+  return reducers.reduce(function (a, b) {
+    return (state, action) => a(b(state, action), action);
+  });
+}
+
+/* ***** */
+function calcSumColWidth(header) {
+  return header.reduce(
+    function (a, { width }) {
+      return [...a, a[a.length - 1] + width];
     },
-    (state) => state
+    [0]
   );
 }
 
@@ -75,12 +80,7 @@ function reduceOnInit(state, action) {
   );
   const idTable = `react-large-table-id-${__TABLE_ID__++}`;
   const { header, rows } = data;
-  const sumColWidth = header.reduce(
-    function (a, { width }) {
-      return [...a, a[a.length - 1] + width];
-    },
-    [0]
-  );
+  const sumColWidth = calcSumColWidth(header);
 
   const { maxWidth } = header.reduce(
     function ({ maxWidth }, { width }) {
@@ -174,6 +174,22 @@ function reduceOnRefreshRows(state, action) {
   return { ...state, rowStart };
 }
 
+function reduceOnResizeColumn(state, action) {
+  const { index, delta } = extractFromPayload(action, "delta", "index");
+  const { header } = state;
+  const next = header.map(function (col, i) {
+    if (i === index) {
+      const { width } = col;
+      const newWidth = Math.min(Math.max(30, width + delta), 500);
+      return { ...col, width: newWidth };
+    }
+    return col;
+  });
+  const sumColWidth = calcSumColWidth(next);
+  const maxWidth = sumColWidth[sumColWidth.length - 1];
+  return { ...state, header: next, sumColWidth, maxWidth };
+}
+
 function reducer(state, action) {
   const { type } = action;
   switch (type) {
@@ -191,6 +207,8 @@ function reducer(state, action) {
       return reduceOnVerticalScroll(state, action);
     case ACTIONS.ON_VERTICAL_WHEEL:
       return reduceOnVerticalWheel(state, action);
+    case ACTIONS.ON_RESIZE_COLUMN:
+      return reduceOnResizeColumn(state, action);
     default:
       return state;
   }

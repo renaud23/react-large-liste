@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
+import ContextTable from "./context-table";
 import { useOuterCssSize } from "../commons";
 
 export function DefaultCellComponent({ content, column, row }) {
@@ -44,16 +45,9 @@ function Row({
   return <tr style={{ height }}>{td}</tr>;
 }
 
-function Body({
-  data,
-  rowStart,
-  nbRows,
-  colStart,
-  nbCols,
-  rowHeight,
-  cellComponent,
-}) {
-  const { header, rows } = data;
+function Body({ cellComponent }) {
+  const [state] = useContext(ContextTable);
+  const { rowStart, nbRows, colStart, nbCols, rowHeight, rows, header } = state;
   if (nbRows && nbCols) {
     const tr = new Array(Math.min(nbRows, rows.length))
       .fill(null)

@@ -11,6 +11,11 @@ $ROW_NUM_WIDTH: 30px;
   -khtml-user-select: none;
   -webkit-user-select: none;
 
+
+  &:focus{
+    outline: none;
+  }
+
   .react-large-table-row-num {
     display: inline-block;
     width: $ROW_NUM_WIDTH;
@@ -64,6 +69,7 @@ $ROW_NUM_WIDTH: 30px;
           th {
             height: 100%;
             display: inline-block;
+            position: relative;
             overflow-x: hidden;
             white-space: nowrap;
           }
