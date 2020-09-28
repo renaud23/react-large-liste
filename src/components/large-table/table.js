@@ -2,6 +2,7 @@ import React, { useRef, useReducer, useEffect, useCallback } from "react";
 import classnames from "classnames";
 import ContextTable from "./context-table";
 import { HorizontalScrollbar, VerticalScrollbar } from "../scrollbar";
+import { RowContentDefaultRenderer } from "./row-num";
 import Header from "./header";
 import Body, { DefaultCellComponent } from "./body";
 import * as ACTIONS from "./actions";
@@ -16,6 +17,7 @@ function ReactLargeTable({
   headerHeight,
   className,
   cellComponent = DefaultCellComponent,
+  rowNumComponent = RowContentDefaultRenderer,
 }) {
   const tableEl = useRef();
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
@@ -90,12 +92,9 @@ function ReactLargeTable({
   const containerEl = useResizeObserver(resizeCallback);
   return (
     <ContextTable.Provider value={[state, dispatch]}>
-      <div className="react-large-table-container">
-        <RowNum />
-        <div
-          className={classnames("react-large-table", className)}
-          ref={containerEl}
-        >
+      <div className={classnames("react-large-table-container", className)}>
+        <RowNum rowNumComponent={rowNumComponent} />
+        <div className={classnames("react-large-table")} ref={containerEl}>
           <VerticalScrollbar
             max={maxHeight}
             start={0}

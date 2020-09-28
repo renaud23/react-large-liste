@@ -15,7 +15,7 @@ function Row({ children, height }) {
   );
 }
 
-function RowNum({ rowNumRenderer: RowRenderer = RowContentDefaultRenderer }) {
+function RowNum({ rowNumComponent: RowRenderer }) {
   const [state] = useContext(ContextTable);
   const { headerHeight, nbRows, rowStart, maxRows, rowHeight, rows } = state;
   const nb = Math.min(nbRows, maxRows - rowStart);
