@@ -113,19 +113,21 @@
       font-size: 12px;
       font-family: monospace;
       background-color: ghostwhite;
-
       height: 100%;
-      line-height: 23px;
-      padding-right: 3px;
-      text-align: right;
     }
 
     .react-large-table-row-num {
       .angle {
+        // border-bottom: solid black 1px;
+        border-right: solid black 1px;
       }
       .num {
         border-bottom: solid black 1px;
         border-right: solid black 1px;
+
+        font-family: Verdana, Geneva, sans-serif;
+        line-height: 23px;
+        font-size: 9px;
       }
     }
 
@@ -136,7 +138,7 @@
     }
 
     table {
-      background-color: transparent; 
+      background-color: transparent;
       font-family: "Lucida Console", Monaco, monospace;
 
       thead {
@@ -146,7 +148,7 @@
             background-color: darkgray;
             color: ghostwhite;
             line-height: 30px;
- 
+
             border-right: solid 1px darkslategrey;
             border-bottom: solid 1px black;
           }
@@ -162,8 +164,7 @@
             background-color: ghostwhite;
             color: black;
             font-size: 12px;
-            line-height: 23px; 
-   
+            line-height: 23px;
 
             &:hover {
               background-color: midnightblue;
