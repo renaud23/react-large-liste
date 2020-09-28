@@ -3,13 +3,13 @@ import ReactLargeTable from "../components/large-table";
 import classnames from "classnames";
 import generate from "./random-table-data";
 
-export function CustomCell({ content, column, row }) {
+function CustomCell({ content, column, row }) {
   const { type, value } = content;
   return <span className={classnames("my-custom-cell", type)}>{value}</span>;
 }
 
 export function DefaultTable() {
-  const data = generate(30, 1000);
+  const data = generate(50, 4000);
 
   return (
     <div className="story-react-large-table">

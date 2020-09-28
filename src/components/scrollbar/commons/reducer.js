@@ -26,10 +26,14 @@ function reduceOnInit(state, action) {
 function reduceOnResize(state, action) {
   const { payload } = action;
   const { size } = payload;
-  const { max, tPos: tOld, size: sOld } = state;
+  const { max, scrollPercent } = state;
   const pSize = Math.ceil((size / max) * size);
   const tSize = Math.max(pSize, __TRACK_MIN_WIDTH__);
-  const tPos = Math.max(Math.min((tOld / sOld) * size, size - tSize), 0);
+  const tPos = Math.max(
+    Math.min(scrollPercent * (size - tSize), size - tSize),
+    0
+  );
+
   return {
     ...state,
     size,
@@ -62,7 +66,6 @@ function reduceOnWheel(state, action) {
   if (delta !== 0) {
     const percent = delta / max;
     const next = Math.min(Math.max(tPos + size * percent, 0), size - tSize);
-
     return { ...state, tPos: next, refresh: true };
   }
   return state;

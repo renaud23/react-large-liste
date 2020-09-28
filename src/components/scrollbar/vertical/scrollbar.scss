@@ -6,6 +6,13 @@
   background-color: rgba(100, 100, 100, 0.5);
   border-left: solid 1px gray;
   height: 100%;
+ 
+  &.hide {
+    width: 0;
+    border: none;
+    margin: 0;
+    padding: 0;
+   }
 
   &.drag {
     background-color: rgba(250, 232, 133, 0.438);

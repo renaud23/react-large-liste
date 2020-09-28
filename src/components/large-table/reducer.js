@@ -40,6 +40,15 @@ function extractFromPayload(action, ...what) {
   }, {});
 }
 
+/* *** */
+export function countColumns(min, max, table) {
+  const [a, b, ...rest] = table;
+  if (a !== undefined && b !== undefined && max >= a && min < b) {
+    return 1 + countColumns(min, max, [b, ...rest]);
+  }
+  return 0;
+}
+
 /* ******* */
 
 function reduceOnInit(state, action) {
@@ -75,15 +84,23 @@ function reduceOnInit(state, action) {
     header,
     sumColWidth,
 
+    rows,
     rowStart: 0,
-    maxRow: rows.length,
+    maxRows: rows.length,
     maxHeight: rows.length * rowHeight,
   };
 }
 
 function reduceOnResize(state, action) {
   const { width, height } = extractFromPayload(action, "width", "height");
-  return { ...state, viewportWidth: width, viewportHeight: height };
+  const { headerHeight, rowHeight } = state;
+  const nbRows = Math.ceil((height - headerHeight) / rowHeight);
+  return {
+    ...state,
+    viewportWidth: width,
+    viewportHeight: height,
+    nbRows,
+  };
 }
 
 function reduceOnHorizontalScroll(state, action) {
@@ -131,22 +148,10 @@ function reduceOnRefreshColumns(state) {
 }
 
 function reduceOnRefreshRows(state, action) {
-  const {
-    viewportHeight,
-    rowHeight,
-    headerHeight,
-    maxHeight,
-    verticalScrollPercent,
-  } = state;
-  const nbRows = Math.trunc((viewportHeight - headerHeight) / rowHeight);
-  // const miny =
-  //   (maxHeight - (viewportHeight - headerHeight)) * verticalScrollPercent;
-  const rowStart = Math.trunc(
-    ((maxHeight - nbRows * rowHeight) * verticalScrollPercent) / rowHeight
-  );
-  // const diffHeight = miny - rowStart * rowHeight;
-
-  return { ...state, nbRows, rowStart };
+  const { verticalScrollPercent, maxRows, nbRows } = state;
+  const rowStart =
+    Math.max(Math.trunc((maxRows - nbRows) * verticalScrollPercent), 0) || 0;
+  return { ...state, rowStart };
 }
 
 function reducer(state, action) {

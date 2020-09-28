@@ -94,7 +94,7 @@
 
 .story-react-large-table {
   display: inline-block;
-  background-color: green;
+  background-color: transparent;
   width: 500px;
   height: 300px;
   resize: both;
@@ -105,39 +105,51 @@
     top: 30px;
   }
 }
-
-.my-custom-theme {
-  .my-custom-cell {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  table {
-    background-color: darkslategray;
-    color: ivory;
-    font-family:"Lucida Console", Monaco, monospace;
-
-    thead {
-      tr {
-        th {
-          background-color: darkblue;
-          color: gold;
-          margin: 0;
-          border-right: solid 1px cyan;
-          border-bottom:solid 1px cyan;
-        }
-      }
+.react-large-table-container {
+  .my-custom-theme {
+    .my-custom-cell {
+      display: block;
+      width: 100%;
+      height: 100%;
     }
 
-    tbody {
-      td {
-        border-right: solid 1px lightslategray;
-        border-bottom: solid 1px lightslategray;
+    table {
+      background-color: cyan;
+      color: ivory;
+      font-family: "Lucida Console", Monaco, monospace;
 
-        &:hover {
-          background-color: midnightblue;
-          color: ivory;
+      thead {
+        tr {
+          th {
+            background-color: darkblue;
+            color: gold;
+            margin: 0;
+            border-right: solid 1px cyan;
+            border-bottom: solid 1px cyan;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          td {
+            
+            background-color: transparent;
+            border: solid 1px blueviolet;
+            background-color: darkslategrey;
+            color: bisque;
+            font-size: 12px;
+            margin-right: 1px;
+            margin-bottom: 1px;
+            line-height: 100%;
+            vertical-align: middle;
+         
+
+            &:hover {
+              background-color: midnightblue;
+              color: ivory;
+            }
+          }
         }
       }
     }

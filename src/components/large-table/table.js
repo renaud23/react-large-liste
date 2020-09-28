@@ -1,11 +1,13 @@
 import React, { useRef, useReducer, useEffect, useCallback } from "react";
 import classnames from "classnames";
+import ContextTable from "./context-table";
 import { HorizontalScrollbar, VerticalScrollbar } from "../scrollbar";
 import Header from "./header";
 import Body, { DefaultCellComponent } from "./body";
 import * as ACTIONS from "./actions";
 import { useResizeObserver } from "../commons";
 import reducer, { INITIAL_STATE } from "./reducer";
+import RowNum from "./row-num";
 import "./table.scss";
 
 function ReactLargeTable({
@@ -24,7 +26,6 @@ function ReactLargeTable({
     horizontalScrollPercent,
     verticalScrollPercent,
     viewportWidth,
-    viewportHeight,
     colStart,
     nbCols,
     rowStart,
@@ -37,7 +38,7 @@ function ReactLargeTable({
   useEffect(
     function () {
       if (tableEl.current) {
-        tableEl.current.scrollLeft = Math.trunc(diffWidth);
+        tableEl.current.scrollLeft = diffWidth;
       }
     },
     [diffWidth, tableEl]
@@ -70,7 +71,7 @@ function ReactLargeTable({
     function () {
       dispatch(ACTIONS.onRefreshRows());
     },
-    [verticalScrollPercent, viewportHeight]
+    [verticalScrollPercent]
   );
 
   /* callbacks */
@@ -88,49 +89,54 @@ function ReactLargeTable({
 
   const containerEl = useResizeObserver(resizeCallback);
   return (
-    <div
-      className={classnames("react-large-table", className)}
-      ref={containerEl}
-    >
-      <VerticalScrollbar
-        max={maxHeight}
-        start={0}
-        ariaMax={0}
-        ariaMin={0}
-        ariaNow={0}
-        ariaControl={idTable}
-        onScroll={onVerticalScrollCallback}
-        parentWheel={0}
-      />
-      <HorizontalScrollbar
-        max={maxWidth}
-        start={0}
-        ariaMax={0}
-        ariaMin={0}
-        ariaNow={0}
-        ariaControl={idTable}
-        onScroll={onHorizontalScrollCallback}
-        parentWheel={0}
-      />
-      <table id={idTable} ref={tableEl}>
-        <Header
-          colStart={colStart}
-          nbCols={nbCols}
-          diffHeight={Math.trunc(diffHeight)}
-          header={header}
-          headerHeight={headerHeight}
-        />
-        <Body
-          data={data}
-          rowStart={rowStart}
-          rowHeight={rowHeight}
-          nbRows={nbRows}
-          colStart={colStart}
-          nbCols={nbCols}
-          cellComponent={cellComponent}
-        />
-      </table>
-    </div>
+    <ContextTable.Provider value={[state, dispatch]}>
+      <div className="react-large-table-container">
+        <RowNum />
+        <div
+          className={classnames("react-large-table", className)}
+          ref={containerEl}
+        >
+          <VerticalScrollbar
+            max={maxHeight}
+            start={0}
+            ariaMax={0}
+            ariaMin={0}
+            ariaNow={0}
+            ariaControl={idTable}
+            onScroll={onVerticalScrollCallback}
+            parentWheel={0}
+          />
+          <HorizontalScrollbar
+            max={maxWidth}
+            start={0}
+            ariaMax={0}
+            ariaMin={0}
+            ariaNow={0}
+            ariaControl={idTable}
+            onScroll={onHorizontalScrollCallback}
+            parentWheel={0}
+          />
+          <table id={idTable} ref={tableEl}>
+            <Header
+              colStart={colStart}
+              nbCols={nbCols}
+              diffHeight={Math.trunc(diffHeight)}
+              header={header}
+              headerHeight={headerHeight}
+            />
+            <Body
+              data={data}
+              rowStart={rowStart}
+              rowHeight={rowHeight}
+              nbRows={nbRows}
+              colStart={colStart}
+              nbCols={nbCols}
+              cellComponent={cellComponent}
+            />
+          </table>
+        </div>
+      </div>
+    </ContextTable.Provider>
   );
 }
 
