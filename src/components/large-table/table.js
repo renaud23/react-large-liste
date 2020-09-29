@@ -39,6 +39,7 @@ function ReactLargeTable({
     diffWidth,
     diffHeight,
     verticalWheel,
+    header,
   } = state;
 
   useEffect(
@@ -70,7 +71,7 @@ function ReactLargeTable({
     function () {
       dispatch(ACTIONS.onRefreshColumns());
     },
-    [horizontalScrollPercent, viewportWidth]
+    [horizontalScrollPercent, viewportWidth, header]
   );
 
   useEffect(
