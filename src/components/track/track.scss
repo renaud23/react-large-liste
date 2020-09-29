@@ -1,6 +1,9 @@
 .react-large-table-track{
     position: absolute;
+    
+     
     &.vertical {
+        z-index: 1;
         right: 0;
         display: inline-block;
         background-color: transparent;

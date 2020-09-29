@@ -1,8 +1,8 @@
 import React, { useCallback, useContext } from "react";
 import { onResizeColumn } from "./actions";
 import ContextTable from "./context-table";
-import { useOuterCssSize } from "../commons";
-import Track from "../track";
+import { useOuterCssSize } from "../../commons";
+import Track from "../../track";
 import classnames from "classnames";
 
 function Th({ width, height, children, index }) {

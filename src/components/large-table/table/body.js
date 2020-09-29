@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import ContextTable from "./context-table";
-import { useOuterCssSize } from "../commons";
+import { useOuterCssSize } from "../../commons";
 
 export function DefaultCellComponent({ content, column, row }) {
   return <span title={`cell(${row}, ${column})`}>{content}</span>;
@@ -37,7 +37,13 @@ function Row({
 
     return (
       <Td key={j} width={width} height={height}>
-        <Cell content={content} row={index} column={j} />
+        <Cell
+          content={content}
+          row={index}
+          column={colStart + j}
+          width={width}
+          height={height}
+        />
       </Td>
     );
   });
@@ -56,7 +62,7 @@ function Body({ cellComponent }) {
         return (
           <Row
             key={i}
-            index={i}
+            index={rowStart + i}
             nbCols={nbCols}
             colStart={colStart}
             header={header}

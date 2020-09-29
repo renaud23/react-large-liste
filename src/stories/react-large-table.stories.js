@@ -1,5 +1,7 @@
 import React from "react";
-import ReactLargeTable from "../components/large-table";
+import ReactLargeTable, {
+  ReactLargeTableEditable,
+} from "../components/large-table";
 import classnames from "classnames";
 import generate from "./random-table-data";
 
@@ -14,16 +16,18 @@ function CustomRowNum({ index, content }) {
   return <div className="custom-row-num">{index}</div>;
 }
 
-export function CustomRowNumTable() {
+export function EditableTable() {
   return (
     <div className="story-react-large-table">
-      <ReactLargeTable
+      <ReactLargeTableEditable
         className="my-custom-theme"
         data={data}
         rowHeight={25}
         headerHeight={30}
         cellComponent={CustomCell}
         rowNumComponent={CustomRowNum}
+        getContent={({ value }) => value}
+        onChange={(content, value) => ({ ...content, value })}
       />
     </div>
   );

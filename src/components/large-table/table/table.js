@@ -1,16 +1,18 @@
 import React, { useRef, useReducer, useEffect, useCallback } from "react";
 import classnames from "classnames";
 import ContextTable from "./context-table";
-import { HorizontalScrollbar, VerticalScrollbar } from "../scrollbar";
+import { HorizontalScrollbar, VerticalScrollbar } from "../../scrollbar";
 import { RowContentDefaultRenderer } from "./row-num";
 import Header from "./header";
 import Body, { DefaultCellComponent } from "./body";
 import * as ACTIONS from "./actions";
-import { useResizeObserver } from "../commons";
+import { useResizeObserver } from "../../commons";
 import reducer, { INITIAL_STATE, compose } from "./reducer";
 import reducerKeyboard from "./reducer-keyboard";
 import RowNum from "./row-num";
 import "./table.scss";
+
+const reducers = compose(reducer, reducerKeyboard);
 
 function ReactLargeTable({
   data = [],
@@ -21,10 +23,7 @@ function ReactLargeTable({
   rowNumComponent = RowContentDefaultRenderer,
 }) {
   const tableEl = useRef();
-  const [state, dispatch] = useReducer(
-    reducer, //compose(reducer, reducerKeyboard),
-    INITIAL_STATE
-  );
+  const [state, dispatch] = useReducer(reducers, INITIAL_STATE);
   const {
     idTable,
     maxWidth,
@@ -100,8 +99,6 @@ function ReactLargeTable({
   }, []);
 
   const onKeyDownCallback = useCallback(function (e) {
-    e.stopPropagation();
-    e.preventDefault();
     dispatch(ACTIONS.onKeyDown(e.key));
   }, []);
 

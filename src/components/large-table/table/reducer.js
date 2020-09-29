@@ -187,7 +187,12 @@ function reduceOnResizeColumn(state, action) {
   });
   const sumColWidth = calcSumColWidth(next);
   const maxWidth = sumColWidth[sumColWidth.length - 1];
-  return { ...state, header: next, sumColWidth, maxWidth };
+  return {
+    ...state,
+    header: next,
+    sumColWidth,
+    maxWidth,
+  };
 }
 
 function reducer(state, action) {

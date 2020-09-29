@@ -109,6 +109,13 @@
 /* */
 .react-large-table-container {
   &.my-custom-theme {
+    .react-large-table-track {
+      &.vertical {
+        background: rgba(33,33,33,0.2);
+
+      }
+    }
+
     .custom-row-num {
       font-size: 12px;
       font-family: monospace;
@@ -128,7 +135,6 @@
         font-family: Verdana, Geneva, sans-serif;
         line-height: 23px;
         font-size: 8px;
-      
       }
     }
 
@@ -148,7 +154,7 @@
             overflow-y: hidden;
             background-color: darkgray;
             color: ghostwhite;
-            line-height: 30px;          
+            line-height: 30px;
             border-right: solid 1px darkslategrey;
             border-bottom: solid 1px black;
           }

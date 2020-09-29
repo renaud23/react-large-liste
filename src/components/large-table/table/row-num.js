@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import ContextTable from "./context-table";
-import { useOuterCssSize } from "../commons";
+import { useOuterCssSize } from "../../commons";
 
 export function RowContentDefaultRenderer({ index }) {
   return index;
