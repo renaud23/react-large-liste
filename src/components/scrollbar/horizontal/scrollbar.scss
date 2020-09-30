@@ -10,6 +10,7 @@
 .custom-horizontal-scrollBar {
   position: absolute;
   bottom: 0px;
+  z-index: 1;
   height: 12px;
   background-color: transparent;
   border-top: solid 1px transparent;
