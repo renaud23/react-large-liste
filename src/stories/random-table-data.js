@@ -24,7 +24,7 @@ function generate(nbCols, nbRows) {
     return {
       path: `column${i + 1}`,
       width: __MIN_WIDTH__ + randomInt(100),
-      label: `column${i}`,
+      label: `column${i + 1}`,
       type: __TYPES__[randomInt(__TYPES__.length)],
     };
   });

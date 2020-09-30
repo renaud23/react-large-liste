@@ -33,7 +33,7 @@ function Edit({ onBlur, value: original }) {
           inputEl.current.blur();
           onBlur(value);
         } else if (e.key === "Escape") {
-          setValue("");
+          onBlur(original);
         }
       }}
     />

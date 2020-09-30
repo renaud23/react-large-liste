@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import CellEditable from "./cell-editable";
+import updateData from "./update-data";
 import Table from "../table";
 
 function createCellWrapper({ onChange, getContent, cellComponent: Cell }) {
@@ -27,13 +28,25 @@ function TableEditable({
   getContent,
   onChange,
 }) {
-  const onChangeCallback = useCallback(
-    function (content, value, row, column) {
-      // TODO
-      const noobs = onChange(content, value, row, column);
-      console.log(noobs);
+  const [editable, setEditable] = useState(data);
+
+  useEffect(
+    function () {
+      setEditable(data);
     },
-    [onChange]
+    [data]
+  );
+
+  const onChangeCallback = useCallback(
+    function (content, value, row, col) {
+      const oldValue = getContent(content);
+      if (oldValue !== value) {
+        const newContent = onChange(content, value, row, col);
+        const newEditable = updateData(editable, newContent, row, col);
+        setEditable(newEditable);
+      }
+    },
+    [onChange, getContent, editable]
   );
 
   const WrapperCell = useMemo(
@@ -49,7 +62,7 @@ function TableEditable({
   return (
     <Table
       className={className}
-      data={data}
+      data={editable}
       rowHeight={rowHeight}
       headerHeight={headerHeight}
       cellComponent={WrapperCell}

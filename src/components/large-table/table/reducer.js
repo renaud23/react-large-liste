@@ -2,28 +2,11 @@ import * as ACTIONS from "./actions";
 
 let __TABLE_ID__ = 1;
 
-/* ******* */
-
-export function compose(...reducers) {
-  return reducers.reduce(function (a, b) {
-    return (state, action) => a(b(state, action), action);
-  });
-}
-
-/* ***** */
-function calcSumColWidth(header) {
-  return header.reduce(
-    function (a, { width }) {
-      return [...a, a[a.length - 1] + width];
-    },
-    [0]
-  );
-}
-
-/* ******* */
+/* INITIAL STATE */
 
 export const INITIAL_STATE = {
   idTable: undefined,
+  init: true,
   header: undefined,
   rowHeight: undefined,
   headerHeight: undefined,
@@ -49,7 +32,36 @@ export const INITIAL_STATE = {
   verticalWheel: undefined,
 };
 
-/* **** */
+/* TOOLS */
+
+/**
+ *
+ * @param  {...any} reducers
+ */
+export function compose(...reducers) {
+  return reducers.reduce(function (a, b) {
+    return (state, action) => a(b(state, action), action);
+  });
+}
+
+/**
+ *
+ * @param {*} header
+ */
+function calcSumColWidth(header) {
+  return header.reduce(
+    function (a, { width }) {
+      return [...a, a[a.length - 1] + width];
+    },
+    [0]
+  );
+}
+
+/**
+ *
+ * @param {*} action
+ * @param  {...any} what
+ */
 export function extractFromPayload(action, ...what) {
   return what.reduce(function (a, attr) {
     const { payload } = action;
@@ -69,8 +81,13 @@ export function countColumns(min, max, table) {
   return 0;
 }
 
-/* ******* */
+/* REDUCER'S PART */
 
+/**
+ *
+ * @param {*} state
+ * @param {*} action
+ */
 function reduceOnInit(state, action) {
   const { data, rowHeight, headerHeight } = extractFromPayload(
     action,
@@ -103,9 +120,31 @@ function reduceOnInit(state, action) {
     rowStart: 0,
     maxRows: rows.length,
     maxHeight: rows.length * rowHeight,
+    init: false,
   };
 }
 
+/**
+ *
+ * @param {*} state
+ * @param {*} action
+ */
+function reduceOnRefresh(state, action) {
+  const { data, rowHeight, headerHeight } = extractFromPayload(
+    action,
+    "data",
+    "rowHeight",
+    "headerHeight"
+  );
+  const { header, rows } = data;
+  return { ...state, rowHeight, headerHeight, header, rows };
+}
+
+/**
+ *
+ * @param {*} state
+ * @param {*} action
+ */
 function reduceOnResize(state, action) {
   const { width, height } = extractFromPayload(action, "width", "height");
   const { headerHeight, rowHeight } = state;
@@ -200,6 +239,8 @@ function reducer(state, action) {
   switch (type) {
     case ACTIONS.ON_INIT:
       return reduceOnInit(state, action);
+    case ACTIONS.ON_REFRESH:
+      return reduceOnRefresh(state, action);
     case ACTIONS.ON_RESIZE:
       return reduceOnResize(state, action);
     case ACTIONS.ON_HORIZONTAL_SCROLL:

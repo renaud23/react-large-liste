@@ -1,22 +1,9 @@
 import React, { useContext } from "react";
 import ContextTable from "./context-table";
-import { useOuterCssSize } from "../../commons";
+import Td from "./td";
 
 export function DefaultCellComponent({ content, column, row }) {
   return <span title={`cell(${row}, ${column})`}>{content}</span>;
-}
-
-function Td({ children, width, height }) {
-  const [tdEl, delta] = useOuterCssSize();
-
-  return (
-    <td
-      ref={tdEl}
-      style={{ width: width - delta.width, height: height - delta.height }}
-    >
-      {children}
-    </td>
-  );
 }
 
 function Row({
@@ -36,7 +23,7 @@ function Row({
     const content = path in row ? row[path] : undefined;
 
     return (
-      <Td key={j} width={width} height={height}>
+      <Td key={`col-${colStart + j}-${index}`} width={width} height={height}>
         <Cell
           content={content}
           row={index}
@@ -61,7 +48,7 @@ function Body({ cellComponent }) {
         const row = rows[rowStart + i];
         return (
           <Row
-            key={i}
+            key={`row-${rowStart + i}`}
             index={rowStart + i}
             nbCols={nbCols}
             colStart={colStart}
@@ -79,4 +66,4 @@ function Body({ cellComponent }) {
   return <tbody></tbody>;
 }
 
-export default Body;
+export default React.memo(Body);

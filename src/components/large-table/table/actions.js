@@ -4,6 +4,12 @@ export const onInit = ({ rowHeight, headerHeight, data }) => ({
   payload: { rowHeight, headerHeight, data },
 });
 
+export const ON_REFRESH = "react-large-table/on-refresh";
+export const onRefresh = ({ rowHeight, headerHeight, data }) => ({
+  type: ON_REFRESH,
+  payload: { rowHeight, headerHeight, data },
+});
+
 export const ON_RESIZE = "react-large-table/on-resize";
 export const onResize = ({ width, height }) => ({
   type: ON_RESIZE,

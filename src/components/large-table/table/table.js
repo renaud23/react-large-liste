@@ -31,20 +31,17 @@ function ReactLargeTable({
     horizontalScrollPercent,
     verticalScrollPercent,
     viewportWidth,
-    colStart,
-    nbCols,
-    rowStart,
-    nbRows,
     diffWidth,
     diffHeight,
     verticalWheel,
     header,
+    init,
   } = state;
 
   useEffect(
     function () {
       if (tableEl.current) {
-        tableEl.current.scrollLeft = diffWidth;
+        tableEl.current.scrollLeft = Math.trunc(diffWidth);
       }
     },
     [diffWidth, tableEl]
@@ -61,9 +58,13 @@ function ReactLargeTable({
 
   useEffect(
     function () {
-      dispatch(ACTIONS.onInit({ data, rowHeight, headerHeight }));
+      if (init) {
+        dispatch(ACTIONS.onInit({ data, rowHeight, headerHeight }));
+      } else {
+        dispatch(ACTIONS.onRefresh({ data, rowHeight, headerHeight }));
+      }
     },
-    [data, rowHeight, headerHeight]
+    [data, rowHeight, headerHeight, init]
   );
 
   useEffect(
@@ -103,6 +104,7 @@ function ReactLargeTable({
   }, []);
 
   const containerEl = useResizeObserver(resizeCallback);
+
   return (
     <ContextTable.Provider value={[state, dispatch]}>
       <div
@@ -134,15 +136,7 @@ function ReactLargeTable({
           />
           <table id={idTable} ref={tableEl} onWheel={onMouseWheelCallback}>
             <Header />
-            <Body
-              data={data}
-              rowStart={rowStart}
-              rowHeight={rowHeight}
-              nbRows={nbRows}
-              colStart={colStart}
-              nbCols={nbCols}
-              cellComponent={cellComponent}
-            />
+            <Body cellComponent={cellComponent} />
           </table>
         </div>
       </div>
