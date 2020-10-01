@@ -36,6 +36,10 @@ function ReactLargeTable({
     verticalWheel,
     header,
     init,
+    rowStart,
+    colStart,
+    maxRows,
+    maxCols,
   } = state;
 
   useEffect(
@@ -117,9 +121,9 @@ function ReactLargeTable({
           <VerticalScrollbar
             max={maxHeight}
             start={0}
-            ariaMax={0}
+            ariaMax={maxRows}
             ariaMin={0}
-            ariaNow={0}
+            ariaNow={rowStart + 1}
             ariaControl={idTable}
             onScroll={onVerticalScrollCallback}
             parentWheel={verticalWheel}
@@ -127,9 +131,9 @@ function ReactLargeTable({
           <HorizontalScrollbar
             max={maxWidth}
             start={0}
-            ariaMax={0}
+            ariaMax={maxCols}
             ariaMin={0}
-            ariaNow={0}
+            ariaNow={colStart + 1}
             ariaControl={idTable}
             onScroll={onHorizontalScrollCallback}
             parentWheel={0}

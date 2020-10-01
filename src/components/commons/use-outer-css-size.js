@@ -3,7 +3,7 @@ import { getCssOuterWidth, getCssOuterHeight } from "./add-css-value";
 
 function useOuterCssSize() {
   const ref = useRef();
-  const [delta, setDelta] = useState({ width: 0, height: 0 });
+  const [delta, setDelta] = useState(undefined);
   useEffect(
     function () {
       const { current } = ref;

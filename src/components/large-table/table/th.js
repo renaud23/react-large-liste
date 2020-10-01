@@ -5,6 +5,13 @@ import { useOuterCssSize } from "../../commons";
 import Track from "../../track";
 import classnames from "classnames";
 
+function getStyle(delta, width, height) {
+  if (delta) {
+    return { width: width - delta.width, height: height - delta.height };
+  }
+  return { width: width, height: height };
+}
+
 function Th({ width, height, children, index }) {
   const [thEl, delta] = useOuterCssSize();
   const dispatch = useContext(ContextTable)[1];
@@ -18,8 +25,8 @@ function Th({ width, height, children, index }) {
   return (
     <th
       ref={thEl}
-      style={{ width: width - delta.width, height: height - delta.height }}
-      className={classnames("react-large-table-th")}
+      style={getStyle(delta, width, height)}
+      className={classnames("react-large-table-th", { waiting: !delta })}
     >
       <Track vertical onTrack={onTrack} />
       {children}

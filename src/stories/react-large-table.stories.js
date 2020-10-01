@@ -5,7 +5,7 @@ import ReactLargeTable, {
 import classnames from "classnames";
 import generate from "./random-table-data";
 
-const data = generate(50, 4000);
+const data = generate(30, 10000);
 
 function CustomCell({ content, column, row }) {
   const { type, value } = content;

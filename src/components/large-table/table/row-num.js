@@ -9,7 +9,11 @@ export function RowContentDefaultRenderer({ index }) {
 function Row({ children, height }) {
   const [thEl, delta] = useOuterCssSize();
   return (
-    <div ref={thEl} className="num" style={{ height: height - delta.height }}>
+    <div
+      ref={thEl}
+      className="num"
+      style={{ height: height - (delta ? delta.height : 0) }}
+    >
       {children}
     </div>
   );

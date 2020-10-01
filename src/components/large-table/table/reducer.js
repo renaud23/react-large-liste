@@ -182,28 +182,27 @@ function reduceOnRefreshColumns(state) {
   } = state;
   const minx = (maxWidth - viewportWidth) * horizontalScrollPercent;
   const maxx = minx + viewportWidth;
-  if (minx < maxx) {
-    const { colStart, nbCols } = header.reduce(
-      function ({ colStart, nbCols, x }, column, i) {
-        const { width } = column;
-        const nx = x + width;
-        if (nx > minx && x < maxx) {
-          return { colStart: Math.min(i, colStart), nbCols: nbCols + 1, x: nx };
-        }
 
-        return { colStart, nbCols, x: nx };
-      },
-      {
-        colStart: Number.MAX_SAFE_INTEGER,
-        nbCols: 0,
-        x: 0,
+  const { colStart, nbCols } = header.reduce(
+    function ({ colStart, nbCols, x }, column, i) {
+      const { width } = column;
+      const nx = x + width;
+      if (nx > minx && x < maxx) {
+        return { colStart: Math.min(i, colStart), nbCols: nbCols + 1, x: nx };
       }
-    );
-    const diffWidth = minx - sumColWidth[colStart];
-    return { ...state, colStart, nbCols, diffWidth };
-  }
 
-  return state;
+      return { colStart, nbCols, x: nx };
+    },
+    {
+      colStart: Number.MAX_SAFE_INTEGER,
+      nbCols: 0,
+      x: 0,
+    }
+  );
+
+  const diffWidth = minx - sumColWidth[colStart];
+
+  return { ...state, colStart, nbCols, diffWidth };
 }
 
 function reduceOnRefreshRows(state, action) {

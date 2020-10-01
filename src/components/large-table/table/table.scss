@@ -72,6 +72,10 @@ $ROW_NUM_WIDTH: 30px;
             position: relative;
             overflow-x: hidden;
             white-space: nowrap;
+
+            &.waiting { 
+              display: none;
+           }
           }
         }
       }
@@ -86,6 +90,10 @@ $ROW_NUM_WIDTH: 30px;
             display: inline-block;
             overflow-x: hidden;
             white-space: nowrap;
+
+           &.waiting { 
+              display: none;
+           }
              
           }
         }
