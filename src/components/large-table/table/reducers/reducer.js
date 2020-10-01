@@ -1,5 +1,4 @@
 import * as ACTIONS from "../actions";
-import { extractFromPayload } from "./tools";
 import reduceOnRefresh from "./reduce-on-refresh";
 import reduceOnInit from "./reduce-on-init";
 import reduceOnResize from "./reduce-on-resize";

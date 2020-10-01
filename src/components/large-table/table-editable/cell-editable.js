@@ -27,6 +27,9 @@ function Edit({ onBlur, value: original }) {
       value={value}
       onBlur={() => onBlur(value)}
       onChange={onChangeCallback}
+      onWheel={function (e) {
+        e.stopPropagation();
+      }}
       onKeyDown={function (e) {
         e.stopPropagation();
         if (e.key === "Enter") {
