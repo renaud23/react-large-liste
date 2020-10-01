@@ -1,5 +1,5 @@
-import * as ACTIONS from "./actions";
-import { extractFromPayload } from "./reducer";
+import * as ACTIONS from "../actions";
+import { extractFromPayload } from "./tools";
 
 const KEY_MAPPING = {
   arrowUp: "ArrowUp",

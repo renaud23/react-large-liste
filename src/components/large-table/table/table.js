@@ -7,12 +7,11 @@ import Header from "./header";
 import Body, { DefaultCellComponent } from "./body";
 import * as ACTIONS from "./actions";
 import { useResizeObserver } from "../../commons";
-import reducer, { INITIAL_STATE, compose } from "./reducer";
-import reducerKeyboard from "./reducer-keyboard";
-import RowNum from "./row-num";
-import "./table.scss";
+import { INITIAL_STATE } from "./reducers";
 
-const reducers = compose(reducer, reducerKeyboard);
+import RowNum from "./row-num";
+import reducers from "./reducers";
+import "./table.scss";
 
 function ReactLargeTable({
   data = [],
