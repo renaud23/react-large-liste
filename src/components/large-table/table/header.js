@@ -5,7 +5,7 @@ import Th from "./th";
 
 function Header() {
   const [state] = useContext(ContextTable);
-  const { colStart, nbCols, header, headerHeight } = state;
+  const { colStart, nbCols, header, headerHeight, diffWidth } = state;
 
   if (nbCols) {
     const th = new Array(nbCols).fill(null).map(function (_, i) {
@@ -21,7 +21,7 @@ function Header() {
         className={classnames("react-large-table-thead")}
         style={{ height: headerHeight }}
       >
-        <tr>{th}</tr>
+        <tr style={{ marginLeft: `${-diffWidth}px` }}>{th}</tr>
       </thead>
     );
   }

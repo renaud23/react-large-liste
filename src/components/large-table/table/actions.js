@@ -40,6 +40,12 @@ export const onVerticalWheel = (delta) => ({
   payload: { delta },
 });
 
+export const ON_HORIZONTAL_WHEEL = "react-large-table/on-horizontal-wheel";
+export const onHorizontalWheel = (delta) => ({
+  type: ON_HORIZONTAL_WHEEL,
+  payload: { delta },
+});
+
 export const ON_KEYDOWN = "react-large-table/on-key-down";
 export const onKeyDown = (key) => ({ type: ON_KEYDOWN, payload: { key } });
 

@@ -172,6 +172,11 @@ function reduceOnVerticalWheel(state, action) {
   return { ...state, verticalWheel: { delta } };
 }
 
+function reduceOnHorizontalWheel(state, action) {
+  const { delta } = extractFromPayload(action, "delta");
+  return { ...state, horizontalWheel: { delta } };
+}
+
 function reduceOnRefreshColumns(state) {
   const {
     sumColWidth,
@@ -180,13 +185,14 @@ function reduceOnRefreshColumns(state) {
     viewportWidth,
     horizontalScrollPercent,
   } = state;
-  const minx = (maxWidth - viewportWidth) * horizontalScrollPercent;
+  const minx = Math.trunc((maxWidth - viewportWidth) * horizontalScrollPercent);
   const maxx = minx + viewportWidth;
 
   const { colStart, nbCols } = header.reduce(
     function ({ colStart, nbCols, x }, column, i) {
       const { width } = column;
       const nx = x + width;
+
       if (nx > minx && x < maxx) {
         return { colStart: Math.min(i, colStart), nbCols: nbCols + 1, x: nx };
       }
@@ -201,7 +207,6 @@ function reduceOnRefreshColumns(state) {
   );
 
   const diffWidth = minx - sumColWidth[colStart];
-
   return { ...state, colStart, nbCols, diffWidth };
 }
 
@@ -252,6 +257,8 @@ function reducer(state, action) {
       return reduceOnVerticalScroll(state, action);
     case ACTIONS.ON_VERTICAL_WHEEL:
       return reduceOnVerticalWheel(state, action);
+    case ACTIONS.ON_HORIZONTAL_WHEEL:
+      return reduceOnHorizontalWheel(state, action);
     case ACTIONS.ON_RESIZE_COLUMN:
       return reduceOnResizeColumn(state, action);
     default:

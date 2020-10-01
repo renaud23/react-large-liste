@@ -14,6 +14,7 @@ function Row({
   height,
   row,
   index,
+  diffWidth,
 }) {
   if (!row) {
     return null;
@@ -23,7 +24,7 @@ function Row({
     const content = path in row ? row[path] : undefined;
 
     return (
-      <Td key={`col-${colStart + j}-${index}`} width={width} height={height}>
+      <Td key={j} width={width} height={height}>
         <Cell
           content={content}
           row={index}
@@ -35,12 +36,22 @@ function Row({
     );
   });
 
-  return <tr style={{ height }}>{td}</tr>;
+  return <tr style={{ height, marginLeft: `${-diffWidth}px` }}>{td}</tr>;
 }
 
 function Body({ cellComponent }) {
   const [state] = useContext(ContextTable);
-  const { rowStart, nbRows, colStart, nbCols, rowHeight, rows, header } = state;
+  const {
+    rowStart,
+    nbRows,
+    colStart,
+    nbCols,
+    rowHeight,
+    rows,
+    header,
+    diffWidth,
+  } = state;
+
   if (nbRows && nbCols) {
     const tr = new Array(Math.min(nbRows, rows.length))
       .fill(null)
@@ -48,7 +59,7 @@ function Body({ cellComponent }) {
         const row = rows[rowStart + i];
         return (
           <Row
-            key={`row-${rowStart + i}`}
+            key={i}
             index={rowStart + i}
             nbCols={nbCols}
             colStart={colStart}
@@ -57,6 +68,7 @@ function Body({ cellComponent }) {
             row={row}
             maxRows={rows.length}
             cellComponent={cellComponent}
+            diffWidth={diffWidth}
           />
         );
       });

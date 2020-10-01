@@ -4,6 +4,7 @@ import { extractFromPayload } from "./reducer";
 const KEY_MAPPING = {
   arrowUp: "ArrowUp",
   arrowDown: "ArrowDown",
+  arrowRight: "ArrowRight",
   pageUp: "PageUp",
   pageDown: "PageDown",
 };

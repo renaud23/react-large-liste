@@ -1,4 +1,4 @@
-import React, { useRef, useReducer, useEffect, useCallback } from "react";
+import React, { useReducer, useEffect, useCallback } from "react";
 import classnames from "classnames";
 import ContextTable from "./context-table";
 import { HorizontalScrollbar, VerticalScrollbar } from "../../scrollbar";
@@ -22,7 +22,6 @@ function ReactLargeTable({
   cellComponent = DefaultCellComponent,
   rowNumComponent = RowContentDefaultRenderer,
 }) {
-  const tableEl = useRef();
   const [state, dispatch] = useReducer(reducers, INITIAL_STATE);
   const {
     idTable,
@@ -31,9 +30,8 @@ function ReactLargeTable({
     horizontalScrollPercent,
     verticalScrollPercent,
     viewportWidth,
-    diffWidth,
-    diffHeight,
     verticalWheel,
+    horizontalWheel,
     header,
     init,
     rowStart,
@@ -41,24 +39,6 @@ function ReactLargeTable({
     maxRows,
     maxCols,
   } = state;
-
-  useEffect(
-    function () {
-      if (tableEl.current) {
-        tableEl.current.scrollLeft = Math.trunc(diffWidth);
-      }
-    },
-    [diffWidth, tableEl]
-  );
-
-  useEffect(
-    function () {
-      if (tableEl.current) {
-        tableEl.current.scrollTop = diffHeight;
-      }
-    },
-    [diffHeight, tableEl]
-  );
 
   useEffect(
     function () {
@@ -104,7 +84,11 @@ function ReactLargeTable({
   }, []);
 
   const onKeyDownCallback = useCallback(function (e) {
-    dispatch(ACTIONS.onKeyDown(e.key));
+    if (e.key === "ArrowRight") {
+      dispatch(ACTIONS.onHorizontalWheel(10));
+    } else if (e.key === "ArrowLeft") {
+      dispatch(ACTIONS.onHorizontalWheel(-10));
+    } else dispatch(ACTIONS.onKeyDown(e.key));
   }, []);
 
   const containerEl = useResizeObserver(resizeCallback);
@@ -136,9 +120,9 @@ function ReactLargeTable({
             ariaNow={colStart + 1}
             ariaControl={idTable}
             onScroll={onHorizontalScrollCallback}
-            parentWheel={0}
+            parentWheel={horizontalWheel}
           />
-          <table id={idTable} ref={tableEl} onWheel={onMouseWheelCallback}>
+          <table id={idTable} onWheel={onMouseWheelCallback}>
             <Header />
             <Body cellComponent={cellComponent} />
           </table>
