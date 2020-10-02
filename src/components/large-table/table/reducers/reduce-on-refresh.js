@@ -13,7 +13,9 @@ function reduceOnRefresh(state, action) {
     "headerHeight"
   );
   const { header, rows } = data;
-  return { ...state, rowHeight, headerHeight, header, rows };
+  const maxRows = rows.length;
+
+  return { ...state, rowHeight, headerHeight, header, rows, maxRows };
 }
 
 export default reduceOnRefresh;

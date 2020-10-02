@@ -24,7 +24,7 @@ function RowNum({ rowNumComponent: RowRenderer }) {
   const { headerHeight, nbRows, rowStart, maxRows, rowHeight, rows } = state;
   const nb = Math.min(nbRows, maxRows - rowStart);
 
-  if (nb && rows.length) {
+  if (nb > 0 && rows.length) {
     const nums = new Array(nb).fill(null).map(function (_, i) {
       return (
         <Row key={i} height={rowHeight}>

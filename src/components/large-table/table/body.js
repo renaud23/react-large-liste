@@ -52,7 +52,7 @@ function Body({ cellComponent }) {
     diffWidth,
   } = state;
 
-  if (nbRows && nbCols) {
+  if (nbRows > 0 && nbCols > 0) {
     const tr = new Array(Math.min(nbRows, rows.length))
       .fill(null)
       .map(function (_, i) {
