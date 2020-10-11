@@ -1,62 +1,61 @@
 import React from "react";
-import ReactLargeTable, {
-  ReactLargeTableEditable,
-} from "../components/large-table";
-import classnames from "classnames";
+import ReactLargeTable from "../react-large-table";
 import generate from "./random-table-data";
+import classnames from "classnames";
+import "./custom-large-table.scss";
 
-const data = generate(30, 1000);
+const __WIDTH__ = 50;
+const __HEIGHT__ = 10000;
 
-function CustomCell({ content, column, row }) {
-  const { type, value } = content;
-  return <span className={classnames("my-custom-cell", type)}>{value}</span>;
-}
-
-function CustomRowNum({ index, content }) {
-  return <div className="custom-row-num">{index}</div>;
-}
-
-export function EditableTable() {
-  return (
-    <div className="story-react-large-table">
-      <ReactLargeTableEditable
-        className="my-custom-theme"
-        data={data}
-        rowHeight={25}
-        headerHeight={30}
-        cellComponent={CustomCell}
-        rowNumComponent={CustomRowNum}
-        getContent={({ value }) => value}
-        onChange={(content, value) => ({ ...content, value })}
-      />
-    </div>
-  );
-}
-
-export function CustomThemeTable() {
-  return (
-    <div className="story-react-large-table">
-      <ReactLargeTable
-        className="my-custom-theme"
-        data={data}
-        rowHeight={25}
-        headerHeight={30}
-        cellComponent={CustomCell}
-      />
-    </div>
-  );
-}
+const data = generate(__WIDTH__, __HEIGHT__);
 
 export function DefaultTable() {
   return (
-    <div className="story-react-large-table">
-      <ReactLargeTable
-        data={data}
-        rowHeight={25}
-        headerHeight={30}
-        cellComponent={CustomCell}
-      />
-    </div>
+    <>
+      <p>
+        A large table of {__WIDTH__} columns and {__HEIGHT__} rows,
+        {__WIDTH__ * __HEIGHT__} cells.
+      </p>
+      <div className="default-table-container">
+        <ReactLargeTable
+          className="custom-large-table-theme"
+          data={data}
+          headerHeight={30}
+          treeSize={true}
+        />
+      </div>
+    </>
+  );
+}
+
+function CustomCellRenderer({ cell, height }) {
+  const { value, type } = cell;
+  return (
+    <span
+      style={{ lineHeight: `${height}px` }}
+      className={classnames("custom-cell-renderer", type)}
+    >
+      {value}
+    </span>
+  );
+}
+
+export function CustomCellTable() {
+  return (
+    <>
+      <p>
+        A large table of {__WIDTH__} columns and {__HEIGHT__} rows,
+        {__WIDTH__ * __HEIGHT__} cells.
+      </p>
+      <div className="default-table-container">
+        <ReactLargeTable
+          className="custom-large-table-theme"
+          data={data}
+          headerHeight={30}
+          cellRenderer={CustomCellRenderer}
+        />
+      </div>
+    </>
   );
 }
 

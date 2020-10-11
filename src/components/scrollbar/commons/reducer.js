@@ -94,7 +94,7 @@ function reduceOnMouseDown(state, action) {
   const { payload } = action;
   const { clientPos } = payload;
   const { tSize, size } = state;
-  const tPos = Math.min(Math.min(clientPos, size - tSize));
+  const tPos = Math.min(clientPos, size - tSize);
   return { ...state, tPos, refresh: true };
 }
 

@@ -14,6 +14,7 @@
     "core-js": "^3.6.5",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
+    "react-scrollable-div": "^0.1.5",
     "resize-observer-polyfill": "^1.5.1"
   },
   "scripts": {
