@@ -1,0 +1,26 @@
+.react-large-table-cell-editable {
+  width: 100%;
+  height: 100%;
+  &:focus {
+    outline: none;
+  }
+  overflow: hidden;
+
+  .react-large-table-cell-input {
+    background-color: tan;
+    outline: none;
+    border-radius: 0;
+    border: solid 1px black;
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    margin: 0;
+    padding: 0;
+
+    z-index: 1;
+
+    &:focus {
+      outline: none;
+      border-radius: 0;
+    }
+  }
+}

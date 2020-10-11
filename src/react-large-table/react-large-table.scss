@@ -1,0 +1,79 @@
+.react-large-table {
+  height: 100%;
+  width: 100%;
+
+  table,
+  thead,
+  tbody,
+  tr,
+  th,
+  td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+  }
+
+  table {
+    border-spacing: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    thead {
+      display: block;
+      width: 100%;
+      position: absolute;
+      top: 0;
+
+      tr {
+        display: block;
+        width: max-content;
+
+        th {
+          height: 100%;
+          display: inline-block;
+          position: relative;
+          overflow: hidden;
+          white-space: nowrap;
+
+          &.waiting {
+            display: none;
+          }
+        }
+      }
+    }
+
+    tbody {
+      display: block;
+      overflow: hidden;
+
+      tr {
+        display: block;
+        width: max-content;
+
+        td {
+          display: inline-block;
+          overflow: hidden;
+          white-space: nowrap;
+
+          &.waiting {
+            display: none;
+          }
+
+          .default-cell-renderer {
+            display: inline-block;
+            width: calc(100% - 5px);
+            height: 100%;
+            text-align: right;
+            padding-right: 5px;            
+          }
+        }
+      }
+    }
+  }
+}
